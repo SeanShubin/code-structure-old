@@ -9,6 +9,7 @@ data class Lookup(
     val reversedNodes: List<Node>,
     val cycles: List<Cycle>,
 ) {
+    val nodeByName = nodes.associateBy { it.name }
     fun descend(target:String):Lookup{
         val newNames = names.mapNotNull { it.descend(target) }
         val newRelations = relations.mapNotNull { it.descend(target) }
@@ -34,16 +35,14 @@ data class Lookup(
     fun children(context: List<String>): List<String> =
         descend(context).flatten().children()
 
-    fun dependsOn(context:List<String>, target:String):List<String> {
-        val targetPath = context + target
-        val relevantNodes = nodes.filter{it.startsWith(targetPath)}
-        val names = relevantNodes.flatMap { node ->
-            node.dependsOn
-        }.mapNotNull{ it.narrowTo(context) }.distinct().filter{
-            it != target
-        }
-        return names
+    fun dependsOn(target:String):List<String> {
+        val name = Name.fromString(target)
+        val dependsOn = nodeByName[name]?.dependsOn ?: emptyList()
+        return dependsOn.map {it.simpleString}
     }
+
+    fun dependsOn(context:List<String>, target:String):List<String> =
+        descend(context).flatten().dependsOn(target)
 
     fun toLines(): List<String> {
         val nameLines = names.map { it.simpleString }.map{"  $it"}
@@ -67,7 +66,7 @@ data class Lookup(
         private fun fromNamesAndRelations(originNames:List<Name>, originRelations:List<Relation>):Lookup {
             val names =
                 (originNames + originRelations.flatMap { it.toList() }).flatMap { it.toHierarchy() }.sorted().distinct()
-            val relations = originRelations.sorted().distinct()
+            val relations = originRelations.filter{it.first != it.second}.sorted().distinct()
             val reversedRelations = relations.map { it.reverse() }.sorted()
             val cycleLists = CycleUtil.findCycles(relations.map { it.toPair() }.toSet())
             val cycles = cycleLists.map { Cycle(it.toList().sorted()) }
