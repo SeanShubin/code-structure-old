@@ -1,6 +1,7 @@
 package com.seanshubin.code.structure.domain
 
 import com.seanshubin.code.structure.domain.FoldFunctions.collapseToList
+import com.seanshubin.code.structure.domain.FoldFunctions.flatCollapseToList
 
 data class Lookup(
     val names: List<Name>,
@@ -37,7 +38,12 @@ data class Lookup(
 
     fun dependsOn(target:String):List<String> {
         val name = Name.fromString(target)
-        val dependsOn = nodeByName[name]?.dependsOn ?: emptyList()
+        val node = nodeByName[name]
+        val dependsOn = if(node == null ){
+            emptyList()
+        } else {
+            node.dependsOn
+        }
         return dependsOn.map {it.simpleString}
     }
 
@@ -70,13 +76,21 @@ data class Lookup(
             val reversedRelations = relations.map { it.reverse() }.sorted()
             val cycleLists = CycleUtil.findCycles(relations.map { it.toPair() }.toSet())
             val cycles = cycleLists.map { Cycle(it.toList().sorted()) }
-            val nodes = constructNodes(relations)
-            val reversedNodes = constructNodes(reversedRelations)
+            val nodes = constructNodes(names, relations)
+            val reversedNodes = constructNodes(names, reversedRelations)
             return Lookup(names, relations, nodes, reversedNodes, cycles)
         }
 
-        private fun constructNodes(relations: List<Relation>): List<Node> {
-            val dependsOnMap = relations.map { it.toPair() }.fold(mapOf(), ::collapseToList)
+        private fun constructNodes(names:List<Name>, relations: List<Relation>): List<Node> {
+            val dependsOnMapNoEmpty = relations.map { it.toPair() }.fold(mapOf(), ::collapseToList)
+            val dependsOnMap = names.map { name ->
+                val existing = dependsOnMapNoEmpty[name]
+                if(existing == null){
+                    name to emptyList<Name>()
+                } else {
+                    name to existing
+                }
+            }
             return dependsOnMap.map { (name, dependsOn) ->
                 Node(name, dependsOn.sorted())
             }

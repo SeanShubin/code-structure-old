@@ -30,7 +30,7 @@ class LookupTest {
         val actual = Lookup.fromLines(lines)
         assertEquals(listOf("a", "b", "c"), actual.names.map { it.simpleString })
         assertEquals(listOf("a->b", "b->a", "b->c"), actual.relations.map { it.simpleString })
-        assertEquals(listOf("a->[b]", "b->[a c]"), actual.nodes.map { it.simpleString })
+        assertEquals(listOf("a->[b]", "b->[a c]", "c->[]"), actual.nodes.map { it.simpleString })
         assertEquals(listOf("a->[b]", "b->[a]", "c->[b]"), actual.reversedNodes.map { it.simpleString })
         assertEquals(listOf("a b"), actual.cycles.map { it.simpleString })
     }
@@ -68,20 +68,36 @@ class LookupTest {
               g.h->c.d
               g.h->i.j
             nodes
+              a->[]
               a.b->[c.d]
+              c->[]
               c.d->[e.f.l]
+              e->[]
+              e.f->[]
               e.f.k->[e.f.l]
               e.f.l->[e.f.m]
               e.f.m->[e.f.n]
               e.f.n->[e.f.l e.f.o g.h]
+              e.f.o->[]
+              g->[]
               g.h->[c.d i.j]
+              i->[]
+              i.j->[]
             reversedNodes
+              a->[]
+              a.b->[]
+              c->[]
               c.d->[a.b g.h]
+              e->[]
+              e.f->[]
+              e.f.k->[]
               e.f.l->[c.d e.f.k e.f.n]
               e.f.m->[e.f.l]
               e.f.n->[e.f.m]
               e.f.o->[e.f.n]
+              g->[]
               g.h->[e.f.n]
+              i->[]
               i.j->[g.h]
             cycles
               c.d e.f.l e.f.m e.f.n g.h
