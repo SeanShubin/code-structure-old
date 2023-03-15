@@ -9,6 +9,25 @@ data class Lookup(
     val reversedNodes: List<Node>,
     val cycles: List<Cycle>,
 ) {
+    fun descend(target:String):Lookup{
+        val newNames = names.mapNotNull { it.descend(target) }
+        val newRelations = relations.mapNotNull { it.descend(target) }
+        return fromNamesAndRelations(newNames,newRelations)
+    }
+
+    fun descend(path:List<String>):Lookup{
+        if(path.isEmpty()) return this
+        val head = path.first()
+        val tail = path.drop(1)
+        return descend(head).descend(tail)
+    }
+
+    fun flatten():Lookup {
+        val newNames = names.map { it.flatten() }
+        val newRelations = relations.map { it.flatten() }
+        return fromNamesAndRelations(newNames,newRelations)
+    }
+
     fun children(context: List<String>): List<Name> {
         val size = context.size + 1
         return names.filter { it.startsWith(context) && it.size == size }
