@@ -41,9 +41,13 @@ data class Lookup(
     companion object {
         fun fromLines(lines: List<String>): Lookup {
             val (parsedNames, parsedRelations) = Format.parseInputLines(lines)
+            return fromNamesAndRelations(parsedNames, parsedRelations)
+        }
+
+        private fun fromNamesAndRelations(originNames:List<Name>, originRelations:List<Relation>):Lookup {
             val names =
-                (parsedNames + parsedRelations.flatMap { it.toList() }).flatMap { it.toHierarchy() }.sorted().distinct()
-            val relations = parsedRelations.sorted().distinct()
+                (originNames + originRelations.flatMap { it.toList() }).flatMap { it.toHierarchy() }.sorted().distinct()
+            val relations = originRelations.sorted().distinct()
             val reversedRelations = relations.map { it.reverse() }.sorted()
             val cycleLists = CycleUtil.findCycles(relations.map { it.toPair() }.toSet())
             val cycles = cycleLists.map { Cycle(it.toList().sorted()) }
