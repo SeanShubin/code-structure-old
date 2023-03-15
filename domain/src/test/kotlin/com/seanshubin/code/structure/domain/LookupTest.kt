@@ -6,8 +6,6 @@ import kotlin.test.assertEquals
 class LookupTest {
     val sample = """
             a.b -> c.d
-            c.d -> e.f
-            e.f -> g.h
             g.h -> c.d
             g.h -> i.j
             e.f.k -> e.f.l
@@ -33,7 +31,7 @@ class LookupTest {
         assertEquals(listOf("a", "b", "c"), actual.names.map { it.simpleString })
         assertEquals(listOf("a->b", "b->a", "b->c"), actual.relations.map { it.simpleString })
         assertEquals(listOf("a->[b]", "b->[a c]"), actual.nodes.map { it.simpleString })
-        assertEquals(listOf("b->[a]", "a->[b]", "c->[b]"), actual.reversedNodes.map { it.simpleString })
+        assertEquals(listOf("a->[b]", "b->[a]", "c->[b]"), actual.reversedNodes.map { it.simpleString })
         assertEquals(listOf("a b"), actual.cycles.map { it.simpleString })
     }
 
@@ -60,9 +58,7 @@ class LookupTest {
               i.j
             relations
               a.b->c.d
-              c.d->e.f
               c.d->e.f.l
-              e.f->g.h
               e.f.k->e.f.l
               e.f.l->e.f.m
               e.f.m->e.f.n
@@ -73,8 +69,7 @@ class LookupTest {
               g.h->i.j
             nodes
               a.b->[c.d]
-              c.d->[e.f e.f.l]
-              e.f->[g.h]
+              c.d->[e.f.l]
               e.f.k->[e.f.l]
               e.f.l->[e.f.m]
               e.f.m->[e.f.n]
@@ -82,18 +77,17 @@ class LookupTest {
               g.h->[c.d i.j]
             reversedNodes
               c.d->[a.b g.h]
-              e.f->[c.d]
               e.f.l->[c.d e.f.k e.f.n]
-              g.h->[e.f e.f.n]
               e.f.m->[e.f.l]
               e.f.n->[e.f.m]
               e.f.o->[e.f.n]
+              g.h->[e.f.n]
               i.j->[g.h]
             cycles
-              c.d e.f e.f.l e.f.m e.f.n g.h
-        """.trimIndent().split("\n")
+              c.d e.f.l e.f.m e.f.n g.h
+        """.trimIndent()
         // when
-        val actual = lookup.toLines()
+        val actual = lookup.toLines().joinToString("\n")
 
         // then
         assertEquals(expected, actual)

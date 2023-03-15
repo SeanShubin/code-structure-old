@@ -41,7 +41,7 @@ data class Lookup(
             val names =
                 (parsedNames + parsedRelations.flatMap { it.toList() }).flatMap { it.toHierarchy() }.sorted().distinct()
             val relations = parsedRelations.sorted().distinct()
-            val reversedRelations = relations.map { it.reverse() }
+            val reversedRelations = relations.map { it.reverse() }.sorted()
             val cycleLists = CycleUtil.findCycles(relations.map { it.toPair() }.toSet())
             val cycles = cycleLists.map { Cycle(it.toList().sorted()) }
             val nodes = constructNodes(relations)
