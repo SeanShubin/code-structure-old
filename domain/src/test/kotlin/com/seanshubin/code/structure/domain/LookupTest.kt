@@ -145,6 +145,21 @@ class LookupTest {
         actual.assertDependsOn("e.f","o")
     }
 
+    @Test
+    fun inCycle() {
+        val actual = Lookup.fromLines(sample)
+        actual.assertInCycle("","a")
+        actual.assertInCycle("","c", "c", "e", "g")
+        actual.assertInCycle("","e", "c", "e", "g")
+        actual.assertInCycle("","g", "c", "e", "g")
+        actual.assertInCycle("","i")
+        actual.assertInCycle("e.f","k")
+        actual.assertInCycle("e.f","l", "l", "m", "n")
+        actual.assertInCycle("e.f","m", "l", "m", "n")
+        actual.assertInCycle("e.f","n", "l", "m", "n")
+        actual.assertInCycle("e.f","o")
+    }
+
     private fun Lookup.assertChildren(contextString:String, vararg expected: String) {
         val context = if (contextString == "") emptyList() else contextString.split(".")
         val actual = children(context)
@@ -154,6 +169,12 @@ class LookupTest {
     private fun Lookup.assertDependsOn(contextString: String, target:String, vararg expected: String) {
         val context = if (contextString == "") emptyList() else contextString.split(".")
         val actual = dependsOn(context, target)
+        assertEquals(expected.toList(), actual)
+    }
+
+    private fun Lookup.assertInCycle(contextString: String, target:String, vararg expected: String) {
+        val context = if (contextString == "") emptyList() else contextString.split(".")
+        val actual = cycleFor(context, target)
         assertEquals(expected.toList(), actual)
     }
 }

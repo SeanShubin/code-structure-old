@@ -11,6 +11,7 @@ data class Lookup(
     val cycles: List<Cycle>,
 ) {
     val nodeByName = nodes.associateBy { it.name }
+    val cycleByName = cycles.flatMap{ cycle -> cycle.parts.map { name -> name to cycle}}.toMap()
     fun descend(target:String):Lookup{
         val newNames = names.mapNotNull { it.descend(target) }
         val newRelations = relations.mapNotNull { it.descend(target) }
@@ -49,6 +50,14 @@ data class Lookup(
 
     fun dependsOn(context:List<String>, target:String):List<String> =
         descend(context).flatten().dependsOn(target)
+
+    fun cycleFor(target:String):List<String> {
+        val name = Name.fromString(target)
+        return cycleByName[name]?.parts?.map{it.simpleString} ?: emptyList()
+    }
+
+    fun cycleFor(context:List<String>, target:String):List<String> =
+        descend(context).flatten().cycleFor(target)
 
     fun toLines(): List<String> {
         val nameLines = names.map { it.simpleString }.map{"  $it"}
