@@ -97,20 +97,20 @@ class LookupTest {
     fun children() {
         val actual = Lookup.fromLines(sample)
         actual.assertChildren("", "a", "c", "e", "g", "i")
-        actual.assertChildren("a", "a.b")
+        actual.assertChildren("a", "b")
         actual.assertChildren("a.b")
-        actual.assertChildren("c", "c.d")
+        actual.assertChildren("c", "d")
         actual.assertChildren("c.d")
-        actual.assertChildren("e", "e.f")
-        actual.assertChildren("e.f", "e.f.k", "e.f.l", "e.f.m", "e.f.n", "e.f.o")
+        actual.assertChildren("e", "f")
+        actual.assertChildren("e.f", "k", "l", "m", "n", "o")
         actual.assertChildren("e.f.k")
         actual.assertChildren("e.f.l")
         actual.assertChildren("e.f.m")
         actual.assertChildren("e.f.n")
         actual.assertChildren("e.f.o")
-        actual.assertChildren("g", "g.h")
+        actual.assertChildren("g", "h")
         actual.assertChildren("g.h")
-        actual.assertChildren("i", "i.j")
+        actual.assertChildren("i", "j")
         actual.assertChildren("i.j")
     }
 
@@ -129,11 +129,10 @@ class LookupTest {
         actual.assertDependsOn("e.f","o")
     }
 
-    private fun Lookup.assertChildren(contextString:String, vararg expectedStrings: String) {
+    private fun Lookup.assertChildren(contextString:String, vararg expected: String) {
         val context = if (contextString == "") emptyList() else contextString.split(".")
-        val expected = expectedStrings.map { Name.fromString(it) }
         val actual = children(context)
-        assertEquals(expected, actual)
+        assertEquals(expected.toList(), actual)
     }
 
     private fun Lookup.assertDependsOn(contextString: String, target:String, vararg expected: String) {

@@ -28,10 +28,11 @@ data class Lookup(
         return fromNamesAndRelations(newNames,newRelations)
     }
 
-    fun children(context: List<String>): List<Name> {
-        val size = context.size + 1
-        return names.filter { it.startsWith(context) && it.size == size }
-    }
+    fun children():List<String> =
+        names.map { it.simpleString }
+
+    fun children(context: List<String>): List<String> =
+        descend(context).flatten().children()
 
     fun dependsOn(context:List<String>, target:String):List<String> {
         val targetPath = context + target
