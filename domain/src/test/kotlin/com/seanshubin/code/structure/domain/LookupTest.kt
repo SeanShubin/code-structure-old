@@ -122,6 +122,11 @@ class LookupTest {
         actual.assertDependsOn("","e", "g")
         actual.assertDependsOn("","g", "c", "i")
         actual.assertDependsOn("","i")
+        actual.assertDependsOn("e.f","k", "l")
+        actual.assertDependsOn("e.f","l", "m")
+        actual.assertDependsOn("e.f","m", "n")
+        actual.assertDependsOn("e.f","n", "l", "o")
+        actual.assertDependsOn("e.f","o")
     }
 
     private fun Lookup.assertChildren(contextString:String, vararg expectedStrings: String) {
@@ -131,11 +136,9 @@ class LookupTest {
         assertEquals(expected, actual)
     }
 
-    private fun Lookup.assertDependsOn(contextString: String, nameString:String, vararg expectedStrings: String) {
+    private fun Lookup.assertDependsOn(contextString: String, target:String, vararg expected: String) {
         val context = if (contextString == "") emptyList() else contextString.split(".")
-        val name = Name.fromString(nameString)
-        val expected = expectedStrings.map { Name.fromString(it) }
-        val actual = dependsOn(context, name)
-        assertEquals(expected, actual)
+        val actual = dependsOn(context, target)
+        assertEquals(expected.toList(), actual)
     }
 }

@@ -14,12 +14,15 @@ data class Lookup(
         return names.filter { it.startsWith(context) && it.size == size }
     }
 
-    fun dependsOn(context:List<String>, name:Name):List<Name> {
-        val relevantNodes = nodes.filter{it.startsWith(name)}
-        val dependsOn = relevantNodes.flatMap { node ->
-            node.dependsOn.mapNotNull {it.narrowTo(context)}
-        }.distinct().filter { it != name }.sorted()
-        return dependsOn
+    fun dependsOn(context:List<String>, target:String):List<String> {
+        val targetPath = context + target
+        val relevantNodes = nodes.filter{it.startsWith(targetPath)}
+        val names = relevantNodes.flatMap { node ->
+            node.dependsOn
+        }.mapNotNull{ it.narrowTo(context) }.distinct().filter{
+            it != target
+        }
+        return names
     }
 
     fun toLines(): List<String> {
