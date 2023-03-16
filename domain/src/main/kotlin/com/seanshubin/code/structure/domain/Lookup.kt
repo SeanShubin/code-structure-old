@@ -1,6 +1,7 @@
 package com.seanshubin.code.structure.domain
 
 import com.seanshubin.code.structure.domain.FoldFunctions.collapseToList
+import kotlin.math.max
 
 data class Lookup(
     val names: List<Name>,
@@ -51,6 +52,47 @@ data class Lookup(
         }
         return dependsOn.map {it.simpleString}
     }
+
+    fun dependsOn(name:Name):List<Name> =
+        nodeByName.getValue(name).dependsOn
+
+    fun dependsOn(cycle:Cycle):List<Name> =
+        cycle.parts.flatMap(::dependsOn).distinct().filter { !cycle.parts.contains(it)}
+
+    fun depth(name:Name):Int {
+        val node = nodeByName.getValue(name)
+        val cycle = cycleByName[name]
+        return if(cycle == null){
+            val dependsOn = node.dependsOn
+            val maxDepthDependsOn= dependsOn.maxOfOrNull(::depth) ?: 0
+            maxDepthDependsOn + 1
+        } else {
+            val dependsOn = dependsOn(cycle)
+            val maxDepthDependsOn = dependsOn.maxOfOrNull(::depth) ?: 0
+            maxDepthDependsOn + cycle.size
+        }
+    }
+
+    fun breadth(name:Name):Int = nodeByName.getValue(name).dependsOn.size
+
+    fun transitiveNames(name:Name):List<Name> {
+        val node = nodeByName.getValue(name)
+        val cycle = cycleByName[name]
+        return if(cycle == null){
+            val immediate = node.dependsOn
+            val descendents = immediate.flatMap(::transitiveNames)
+            (immediate + descendents).sorted().distinct()
+        } else {
+            val dependsOn = dependsOn(cycle)
+            val descendents = dependsOn.flatMap(::transitiveNames)
+            (cycle.parts + dependsOn + descendents).sorted().distinct().filter {it != name}
+        }
+    }
+
+    fun transitive(name:Name):Int = transitiveNames(name).size
+
+    fun descendant(name:Name):Int = names.filter { it.startsWith(name) && it != name }.size
+
 
     fun dependsOn(context:List<String>, target:String):List<String> =
         descend(context).flatten().dependsOn(target)

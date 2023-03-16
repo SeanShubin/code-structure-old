@@ -133,35 +133,35 @@ class LookupTest {
     @Test
     fun dependsOn() {
         val actual = Lookup.fromLines(sample)
-        actual.assertDependsOn("","a", "c")
-        actual.assertDependsOn("","c", "e")
-        actual.assertDependsOn("","e", "g")
-        actual.assertDependsOn("","g", "c", "i")
-        actual.assertDependsOn("","i")
-        actual.assertDependsOn("e.f","k", "l")
-        actual.assertDependsOn("e.f","l", "m")
-        actual.assertDependsOn("e.f","m", "n")
-        actual.assertDependsOn("e.f","n", "l", "o")
-        actual.assertDependsOn("e.f","o")
+        actual.assertDependsOn("", "a", "c")
+        actual.assertDependsOn("", "c", "e")
+        actual.assertDependsOn("", "e", "g")
+        actual.assertDependsOn("", "g", "c", "i")
+        actual.assertDependsOn("", "i")
+        actual.assertDependsOn("e.f", "k", "l")
+        actual.assertDependsOn("e.f", "l", "m")
+        actual.assertDependsOn("e.f", "m", "n")
+        actual.assertDependsOn("e.f", "n", "l", "o")
+        actual.assertDependsOn("e.f", "o")
     }
 
     @Test
     fun inCycle() {
         val actual = Lookup.fromLines(sample)
-        actual.assertInCycle("","a")
-        actual.assertInCycle("","c", "c", "e", "g")
-        actual.assertInCycle("","e", "c", "e", "g")
-        actual.assertInCycle("","g", "c", "e", "g")
-        actual.assertInCycle("","i")
-        actual.assertInCycle("e.f","k")
-        actual.assertInCycle("e.f","l", "l", "m", "n")
-        actual.assertInCycle("e.f","m", "l", "m", "n")
-        actual.assertInCycle("e.f","n", "l", "m", "n")
-        actual.assertInCycle("e.f","o")
+        actual.assertInCycle("", "a")
+        actual.assertInCycle("", "c", "c", "e", "g")
+        actual.assertInCycle("", "e", "c", "e", "g")
+        actual.assertInCycle("", "g", "c", "e", "g")
+        actual.assertInCycle("", "i")
+        actual.assertInCycle("e.f", "k")
+        actual.assertInCycle("e.f", "l", "l", "m", "n")
+        actual.assertInCycle("e.f", "m", "l", "m", "n")
+        actual.assertInCycle("e.f", "n", "l", "m", "n")
+        actual.assertInCycle("e.f", "o")
     }
 
     @Test
-    fun rootReport(){
+    fun rootReport() {
         // given
         val lookup = Lookup.fromLines(sample)
         val expectedName = "dependencies.txt"
@@ -189,19 +189,29 @@ class LookupTest {
         assertEquals(expectedName, actualName)
     }
 
-    private fun Lookup.assertChildren(contextString:String, vararg expected: String) {
+    @Test
+    fun details() {
+        val lookup = Lookup.fromLines(sample)
+        val name = Name.fromString("a.b")
+        assertEquals(7, lookup.depth(name))
+        assertEquals(1, lookup.breadth(name))
+        assertEquals(7, lookup.transitive(name))
+        assertEquals(0, lookup.descendant(name))
+    }
+
+    private fun Lookup.assertChildren(contextString: String, vararg expected: String) {
         val context = if (contextString == "") emptyList() else contextString.split(".")
         val actual = children(context)
         assertEquals(expected.toList(), actual)
     }
 
-    private fun Lookup.assertDependsOn(contextString: String, target:String, vararg expected: String) {
+    private fun Lookup.assertDependsOn(contextString: String, target: String, vararg expected: String) {
         val context = if (contextString == "") emptyList() else contextString.split(".")
         val actual = dependsOn(context, target)
         assertEquals(expected.toList(), actual)
     }
 
-    private fun Lookup.assertInCycle(contextString: String, target:String, vararg expected: String) {
+    private fun Lookup.assertInCycle(contextString: String, target: String, vararg expected: String) {
         val context = if (contextString == "") emptyList() else contextString.split(".")
         val actual = cycleFor(context, target)
         assertEquals(expected.toList(), actual)
