@@ -1,7 +1,6 @@
 package com.seanshubin.code.structure.domain
 
 import com.seanshubin.code.structure.domain.FoldFunctions.collapseToList
-import com.seanshubin.code.structure.domain.FoldFunctions.flatCollapseToList
 
 data class Lookup(
     val names: List<Name>,
@@ -10,8 +9,13 @@ data class Lookup(
     val reversedNodes: List<Node>,
     val cycles: List<Cycle>,
 ) {
-    val nodeByName = nodes.associateBy { it.name }
-    val cycleByName = cycles.flatMap{ cycle -> cycle.parts.map { name -> name to cycle}}.toMap()
+    val nodeByName: Map<Name, Node> = nodes.associateBy { it.name }
+    val cycleByName: Map<Name, Cycle> = cycles.flatMap{ cycle -> cycle.parts.map { name -> name to cycle}}.toMap()
+    val namesInRelation: List<Name> = relations.flatMap{it.toList()}.sorted().distinct()
+    val namesNotInRelation:List<Name> =names.filter { !namesInRelation.contains(it) }
+    val relationsByCycle: Map<Cycle, List<Relation>> = relations.mapNotNull(::toCycleAndRelation).fold(emptyMap(), ::collapseToList)
+    val relationsNotInCycle = relations.filter{ toCycleAndRelation(it) == null}
+
     fun descend(target:String):Lookup{
         val newNames = names.mapNotNull { it.descend(target) }
         val newRelations = relations.mapNotNull { it.descend(target) }
@@ -58,6 +62,45 @@ data class Lookup(
 
     fun cycleFor(context:List<String>, target:String):List<String> =
         descend(context).flatten().cycleFor(target)
+
+    private fun toCycleAndRelation(relation:Relation):Pair<Cycle, Relation>? {
+        val (first, second) = relation
+        val firstCycle = cycleByName[first] ?: return null
+        val secondCycle = cycleByName[second] ?: return null
+        if(firstCycle != secondCycle) return null
+        return firstCycle to relation
+    }
+
+    fun report():List<String> {
+        val header = listOf("digraph detangled {")
+        val singles = namesNotInRelation.map {
+            "  ${it.simpleString}"
+        }
+        val notInCycle = relationsNotInCycle.map { (first, second) ->
+            "  ${first.simpleString} -> ${second.simpleString}"
+        }
+        val inCycle = relationsByCycle.toList().flatMapIndexed { index, (cycle, relations) ->
+            val beginCycle = listOf(
+                "  subgraph cluster_$index {",
+                "    penwidth=2",
+                "    pencolor=Red")
+            val cycleBody = relations.map { relation ->
+                "    ${relation.first.simpleString} -> ${relation.second.simpleString}"
+            }
+            val endCycle = listOf(
+                "  }"
+            )
+            beginCycle + cycleBody + endCycle
+        }
+        val footer = listOf("}")
+        return header + singles + notInCycle + inCycle + footer
+    }
+
+    fun report(context:List<String>):Report {
+        val name = (listOf("dependencies")+context).joinToString("-") + ".txt"
+        val lines = descend(context).flatten().report()
+        return Report(name, lines)
+    }
 
     fun toLines(): List<String> {
         val nameLines = names.map { it.simpleString }.map{"  $it"}
