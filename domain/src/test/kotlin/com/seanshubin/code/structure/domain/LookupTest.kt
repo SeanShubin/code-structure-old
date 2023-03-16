@@ -202,7 +202,7 @@ class LookupTest {
     private fun Lookup.assertChildren(contextString: String, vararg expectedStrings: String) {
         val context = if (contextString == "") emptyList() else contextString.split(".")
         val actual = children(context)
-        val expected = expectedStrings.map { Name.fromString(it)}
+        val expected = expectedStrings.map { Name.fromString(it) }
         assertEquals(expected, actual)
     }
 
@@ -210,7 +210,7 @@ class LookupTest {
         val context = if (contextString == "") emptyList() else contextString.split(".")
         val name = Name.fromString(target)
         val actual = dependsOnNames(context, name)
-        val expected= expectedStrings.map{Name.fromString(it)}
+        val expected = expectedStrings.map { Name.fromString(it) }
         assertEquals(expected, actual)
     }
 
@@ -218,7 +218,7 @@ class LookupTest {
         val context = if (contextString == "") emptyList() else contextString.split(".")
         val name = Name.fromString(target)
         val actual = namesInCycle(context, name)
-        val expected = expectedStrings.map{Name.fromString(it)}
+        val expected = expectedStrings.map { Name.fromString(it) }
         assertEquals(expected, actual)
     }
 }

@@ -18,6 +18,56 @@ data class Lookup(
         relations.mapNotNull(::toCycleAndRelation).fold(emptyMap(), ::collapseToList)
     private val relationsNotInCycle = relations.filter { toCycleAndRelation(it) == null }
 
+    fun children(context: List<String>): List<Name> =
+        descend(context).flatten().names
+
+    fun depth(name: Name): Int {
+        val node = nodeByName.getValue(name)
+        val cycle = cycleByName[name]
+        return if (cycle == null) {
+            val dependsOn = node.dependsOn
+            val maxDepthDependsOn = dependsOn.maxOfOrNull(::depth) ?: 0
+            maxDepthDependsOn + 1
+        } else {
+            val dependsOn = dependsOnNames(cycle)
+            val maxDepthDependsOn = dependsOn.maxOfOrNull(::depth) ?: 0
+            maxDepthDependsOn + cycle.size
+        }
+    }
+
+    fun breadth(name: Name): Int = nodeByName.getValue(name).dependsOn.size
+
+    fun transitive(name: Name): Int = transitiveNames(name).size
+
+    fun descendant(name: Name): Int = descendantNames(name).size
+
+    fun dependsOnNames(context: List<String>, target: Name): List<Name> =
+        descend(context).flatten().dependsOnNames(target)
+
+    fun namesInCycle(context: List<String>, name: Name): List<Name> =
+        descend(context).flatten().namesInCycle(name)
+
+    fun report(context: List<String>): Report {
+        val name = (listOf("dependencies") + context).joinToString("-") + ".txt"
+        val lines = descend(context).flatten().report()
+        return Report(name, lines)
+    }
+
+    fun toLines(): List<String> {
+        val nameLines = names.map { it.simpleString }.map { "  $it" }
+        val relationLines = relations.map { it.simpleString }.map { "  $it" }
+        val nodeLines = nodes.map { it.simpleString }.map { "  $it" }
+        val reversedNodeLines = reversedNodes.map { it.simpleString }.map { "  $it" }
+        val cycleLines = cycles.map { it.simpleString }.map { "  $it" }
+        return listOf("names") + nameLines +
+                listOf("relations") + relationLines +
+                listOf("nodes") + nodeLines +
+                listOf("reversedNodes") + reversedNodeLines +
+                listOf("cycles") + cycleLines
+    }
+
+    private fun descendantNames(name: Name): List<Name> = names.filter { it.startsWith(name) && it != name }
+
     private fun descend(target: String): Lookup {
         val newNames = names.mapNotNull { it.descend(target) }
         val newRelations = relations.mapNotNull { it.descend(target) }
@@ -37,9 +87,6 @@ data class Lookup(
         return fromNamesAndRelations(newNames, newRelations)
     }
 
-    fun children(context: List<String>): List<Name> =
-        descend(context).flatten().names
-
     private fun dependsOnNames(name: Name): List<Name> {
         val node = nodeByName.getValue(name)
         return node.dependsOn
@@ -47,22 +94,6 @@ data class Lookup(
 
     private fun dependsOnNames(cycle: Cycle): List<Name> =
         cycle.parts.flatMap(::dependsOnNames).distinct().filter { !cycle.parts.contains(it) }
-
-    fun depth(name: Name): Int {
-        val node = nodeByName.getValue(name)
-        val cycle = cycleByName[name]
-        return if (cycle == null) {
-            val dependsOn = node.dependsOn
-            val maxDepthDependsOn = dependsOn.maxOfOrNull(::depth) ?: 0
-            maxDepthDependsOn + 1
-        } else {
-            val dependsOn = dependsOnNames(cycle)
-            val maxDepthDependsOn = dependsOn.maxOfOrNull(::depth) ?: 0
-            maxDepthDependsOn + cycle.size
-        }
-    }
-
-    fun breadth(name: Name): Int = nodeByName.getValue(name).dependsOn.size
 
     private fun transitiveNames(name: Name): List<Name> {
         val node = nodeByName.getValue(name)
@@ -78,19 +109,9 @@ data class Lookup(
         }
     }
 
-    fun transitive(name: Name): Int = transitiveNames(name).size
-
-    fun descendant(name: Name): Int = names.filter { it.startsWith(name) && it != name }.size
-
-    fun dependsOnNames(context: List<String>, target: Name): List<Name> =
-        descend(context).flatten().dependsOnNames(target)
-
     private fun namesInCycle(name: Name): List<Name> {
         return cycleByName[name]?.parts?.map { it } ?: emptyList()
     }
-
-    fun namesInCycle(context: List<String>, name: Name): List<Name> =
-        descend(context).flatten().namesInCycle(name)
 
     private fun toCycleAndRelation(relation: Relation): Pair<Cycle, Relation>? {
         val (first, second) = relation
@@ -124,25 +145,6 @@ data class Lookup(
         }
         val footer = listOf("}")
         return header + singles + notInCycle + inCycle + footer
-    }
-
-    fun report(context: List<String>): Report {
-        val name = (listOf("dependencies") + context).joinToString("-") + ".txt"
-        val lines = descend(context).flatten().report()
-        return Report(name, lines)
-    }
-
-    fun toLines(): List<String> {
-        val nameLines = names.map { it.simpleString }.map { "  $it" }
-        val relationLines = relations.map { it.simpleString }.map { "  $it" }
-        val nodeLines = nodes.map { it.simpleString }.map { "  $it" }
-        val reversedNodeLines = reversedNodes.map { it.simpleString }.map { "  $it" }
-        val cycleLines = cycles.map { it.simpleString }.map { "  $it" }
-        return listOf("names") + nameLines +
-                listOf("relations") + relationLines +
-                listOf("nodes") + nodeLines +
-                listOf("reversedNodes") + reversedNodeLines +
-                listOf("cycles") + cycleLines
     }
 
     companion object {
