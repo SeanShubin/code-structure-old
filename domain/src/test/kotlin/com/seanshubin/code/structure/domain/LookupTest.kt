@@ -220,6 +220,17 @@ class LookupTest {
         assertEquals(expected, actual)
     }
 
+    @Test
+    fun generateReports() {
+        // given
+        val lookup = Lookup.fromLines(sample)
+
+        // when
+        val actual = lookup.generateReports()
+
+        // then
+        actual.flatMap { it.toLines()}.forEach(::println)
+    }
 
     private fun Lookup.assertChildren(contextString: String, vararg expectedStrings: String) {
         val context = if (contextString == "") emptyList() else contextString.split(".")

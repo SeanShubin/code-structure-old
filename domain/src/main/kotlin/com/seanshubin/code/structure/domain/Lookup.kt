@@ -58,6 +58,9 @@ data class Lookup(
         return Report(name, lines)
     }
 
+    fun generateReports():List<Report> =
+        reportableContexts().map(::report)
+
     fun toLines(): List<String> {
         val nameLines = names.map { it.simpleString }.map { "  $it" }
         val relationLines = relations.map { it.simpleString }.map { "  $it" }
