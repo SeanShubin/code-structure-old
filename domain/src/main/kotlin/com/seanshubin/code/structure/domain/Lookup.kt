@@ -48,18 +48,33 @@ data class Lookup(
         descend(context).flatten().namesInCycle(name)
 
     fun reportableContexts(): List<List<String>> {
-        val allContexts = listOf(listOf<String>()) + names.map{it.parts}
+        val allContexts = listOf(listOf<String>()) + names.map { it.parts }
         return allContexts.filter { children(it).isNotEmpty() }
     }
 
-    fun report(context: List<String>): Report {
+    fun report(context: List<String>, makeLink: (Name) -> String?): Report {
         val name = (listOf("dependencies") + context).joinToString("-")
-        val lines = descend(context).flatten().report()
+        val lines = descend(context).flatten().reportAll(makeLink)
         return Report(name, lines)
     }
 
-    fun generateReports():List<Report> =
-        reportableContexts().map(::report)
+    fun generateReports(): List<Report> {
+        val contexts = reportableContexts()
+        return contexts.map { context ->
+            val makeLink = makeLinkFunction(contexts, context)
+            report(context, makeLink)
+        }
+    }
+
+    fun makeLinkFunction(contexts: List<List<String>>, context: List<String>): (Name) -> String? = { name: Name ->
+        val target = context + name.parts
+        if(contexts.contains(target)){
+            val link = (listOf("dependencies") + context + name.parts).joinToString("-")
+            "$link.svg"
+        } else {
+            null
+        }
+    }
 
     fun toLines(): List<String> {
         val nameLines = names.map { it.simpleString }.map { "  $it" }
@@ -129,10 +144,15 @@ data class Lookup(
         return firstCycle to relation
     }
 
-    private fun report(): List<String> {
+    private fun reportAll(makeLink: (Name) -> String?): List<String> {
         val header = listOf("digraph detangled {")
-        val singles = namesNotInRelation.map {
-            "  ${it.simpleString}"
+        val singles = names.map {
+            val link = makeLink(it)
+            if(link == null) {
+                "  ${it.simpleString}"
+            } else {
+                "  ${it.simpleString} [URL=\"$link\" fontcolor=Blue]"
+            }
         }
         val notInCycle = relationsNotInCycle.map { (first, second) ->
             "  ${first.simpleString} -> ${second.simpleString}"

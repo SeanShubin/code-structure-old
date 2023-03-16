@@ -14,8 +14,8 @@ class Dependencies(val args: Array<String>) {
         System.exit(code)
         throw RuntimeException("system exited with code $code")
     }
-    val emitLine:(String)->Unit = ::println
+    val emitLine: (String) -> Unit = ::println
     val processRunner: ProcessRunner = SystemProcessRunner()
-    val svgGenerator:SvgGenerator = SvgGeneratorImpl(processRunner)
+    val svgGenerator: SvgGenerator = SvgGeneratorImpl(processRunner)
     val runner: Runnable = Runner(args, files, exit, emitLine, svgGenerator)
 }

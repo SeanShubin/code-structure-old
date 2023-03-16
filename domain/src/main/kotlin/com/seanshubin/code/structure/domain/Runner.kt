@@ -6,9 +6,9 @@ import java.nio.file.Paths
 class Runner(
     val args: Array<String>,
     val files: FilesContract,
-    val exit:(Int)->Nothing,
-    val emitLine:(String)->Unit,
-    val svgGenerator:SvgGenerator
+    val exit: (Int) -> Nothing,
+    val emitLine: (String) -> Unit,
+    val svgGenerator: SvgGenerator
 ) : Runnable {
     override fun run() {
         val inputFileName = args.getOrNull(0) ?: throwError("first parameter must be input file")
@@ -18,7 +18,7 @@ class Runner(
         val inputLines = files.readAllLines(inputFile)
         val lookup = Lookup.fromLines(inputLines)
         val reports = lookup.generateReports()
-        fun writeReport(report:Report){
+        fun writeReport(report: Report) {
             val baseName = report.baseName
             val dotName = "$baseName.txt"
             val svgName = "$baseName.svg"
@@ -31,7 +31,7 @@ class Runner(
         reports.forEach(::writeReport)
     }
 
-    private fun throwError(message:String):Nothing {
+    private fun throwError(message: String): Nothing {
         emitLine(message)
         exit(1)
     }

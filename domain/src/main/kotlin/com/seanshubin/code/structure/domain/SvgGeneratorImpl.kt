@@ -6,8 +6,8 @@ import java.nio.file.Path
 
 class SvgGeneratorImpl(
     private val processRunner: ProcessRunner
-    ):SvgGenerator{
-    override fun generate(directory:Path, dotFileName: String, svgFileName: String) {
+) : SvgGenerator {
+    override fun generate(directory: Path, dotFileName: String, svgFileName: String) {
         val command = listOf(
             "dot",
             "-Tsvg",
@@ -16,12 +16,13 @@ class SvgGeneratorImpl(
         )
         val processInput = ProcessInput(command, directory)
         val processOutput = processRunner.run(processInput)
-        if(processOutput.exitCode != 0) {
+        if (processOutput.exitCode != 0) {
             val messageLines = listOf(
                 "unable to generate report",
                 directory.toString(),
                 dotFileName,
-                svgFileName) + processOutput.toLines()
+                svgFileName
+            ) + processOutput.toLines()
             val message = messageLines.joinToString("\n")
             throw RuntimeException(message)
         }

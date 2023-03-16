@@ -4,6 +4,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class LookupTest {
+    val nullMakeLink:(Name)->String? = { null}
     val sample = """
             a.b -> c.d
             g.h -> c.d
@@ -180,7 +181,7 @@ class LookupTest {
         """.trimIndent()
 
         // when
-        val actual = lookup.report(listOf())
+        val actual = lookup.report(listOf(), nullMakeLink)
 
         // then
         val actualText = actual.lines.joinToString("\n")
@@ -229,7 +230,7 @@ class LookupTest {
         val actual = lookup.generateReports()
 
         // then
-        actual.flatMap { it.toLines()}.forEach(::println)
+        actual.flatMap { it.toLines() }.forEach(::println)
     }
 
     private fun Lookup.assertChildren(contextString: String, vararg expectedStrings: String) {
