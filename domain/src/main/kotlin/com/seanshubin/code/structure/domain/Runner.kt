@@ -18,6 +18,7 @@ class Runner(
         val inputLines = files.readAllLines(inputFile)
         val lookup = Lookup.fromLines(inputLines)
         val reports = lookup.generateReports()
+        files.createDirectories(reportDir)
         fun writeReport(report: Report) {
             val baseName = report.baseName
             val dotName = "$baseName.txt"

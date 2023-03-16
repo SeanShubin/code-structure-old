@@ -18,6 +18,8 @@ data class Lookup(
         relations.mapNotNull(::toCycleAndRelation).fold(emptyMap(), ::collapseToList)
     private val relationsNotInCycle = relations.filter { toCycleAndRelation(it) == null }
 
+    val descendCache = mutableMapOf<String, Lookup>()
+
     fun children(context: List<String>): List<Name> =
         descend(context).flatten().names
 
@@ -92,9 +94,16 @@ data class Lookup(
     private fun descendantNames(name: Name): List<Name> = names.filter { it.startsWith(name) && it != name }
 
     private fun descend(target: String): Lookup {
-        val newNames = names.mapNotNull { it.descend(target) }
-        val newRelations = relations.mapNotNull { it.descend(target) }
-        return fromNamesAndRelations(newNames, newRelations)
+        val existing = descendCache[target]
+        return if(existing == null) {
+            val newNames = names.mapNotNull { it.descend(target) }
+            val newRelations = relations.mapNotNull { it.descend(target) }
+            val newValue = fromNamesAndRelations(newNames, newRelations)
+            descendCache[target] = newValue
+            descend(target)
+        } else {
+            existing
+        }
     }
 
     private fun descend(path: List<String>): Lookup {
@@ -149,13 +158,13 @@ data class Lookup(
         val singles = names.map {
             val link = makeLink(it)
             if (link == null) {
-                "  ${it.simpleString}"
+                "  \"${it.simpleString}\""
             } else {
-                "  ${it.simpleString} [URL=\"$link\" fontcolor=Blue]"
+                "  \"${it.simpleString}\" [URL=\"$link\" fontcolor=Blue]"
             }
         }
         val notInCycle = relationsNotInCycle.map { (first, second) ->
-            "  ${first.simpleString} -> ${second.simpleString}"
+            "  \"${first.simpleString}\" -> \"${second.simpleString}\""
         }
         val inCycle = relationsByCycle.toList().flatMapIndexed { index, (cycle, relations) ->
             val beginCycle = listOf(
