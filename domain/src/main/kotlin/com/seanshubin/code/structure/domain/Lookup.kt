@@ -1,7 +1,6 @@
 package com.seanshubin.code.structure.domain
 
 import com.seanshubin.code.structure.domain.FoldFunctions.collapseToList
-import kotlin.math.max
 
 data class Lookup(
     val names: List<Name>,
@@ -10,39 +9,39 @@ data class Lookup(
     val reversedNodes: List<Node>,
     val cycles: List<Cycle>,
 ) {
-    val nodeByName: Map<Name, Node> = nodes.associateBy { it.name }
-    val cycleByName: Map<Name, Cycle> = cycles.flatMap{ cycle -> cycle.parts.map { name -> name to cycle}}.toMap()
-    val namesInRelation: List<Name> = relations.flatMap{it.toList()}.sorted().distinct()
-    val namesNotInRelation:List<Name> =names.filter { !namesInRelation.contains(it) }
-    val relationsByCycle: Map<Cycle, List<Relation>> = relations.mapNotNull(::toCycleAndRelation).fold(emptyMap(), ::collapseToList)
-    val relationsNotInCycle = relations.filter{ toCycleAndRelation(it) == null}
+    private val nodeByName: Map<Name, Node> = nodes.associateBy { it.name }
+    private val cycleByName: Map<Name, Cycle> = cycles.flatMap{ cycle -> cycle.parts.map { name -> name to cycle}}.toMap()
+    private val namesInRelation: List<Name> = relations.flatMap{it.toList()}.sorted().distinct()
+    private val namesNotInRelation:List<Name> =names.filter { !namesInRelation.contains(it) }
+    private val relationsByCycle: Map<Cycle, List<Relation>> = relations.mapNotNull(::toCycleAndRelation).fold(emptyMap(), ::collapseToList)
+    private val relationsNotInCycle = relations.filter{ toCycleAndRelation(it) == null}
 
-    fun descend(target:String):Lookup{
+    private fun descend(target:String):Lookup{
         val newNames = names.mapNotNull { it.descend(target) }
         val newRelations = relations.mapNotNull { it.descend(target) }
         return fromNamesAndRelations(newNames,newRelations)
     }
 
-    fun descend(path:List<String>):Lookup{
+    private fun descend(path:List<String>):Lookup{
         if(path.isEmpty()) return this
         val head = path.first()
         val tail = path.drop(1)
         return descend(head).descend(tail)
     }
 
-    fun flatten():Lookup {
+    private fun flatten():Lookup {
         val newNames = names.map { it.flatten() }
         val newRelations = relations.map { it.flatten() }
         return fromNamesAndRelations(newNames,newRelations)
     }
 
-    fun children():List<String> =
+    private fun children():List<String> =
         names.map { it.simpleString }
 
     fun children(context: List<String>): List<String> =
         descend(context).flatten().children()
 
-    fun dependsOn(target:String):List<String> {
+    private fun dependsOn(target:String):List<String> {
         val name = Name.fromString(target)
         val node = nodeByName[name]
         val dependsOn = if(node == null ){
@@ -53,10 +52,10 @@ data class Lookup(
         return dependsOn.map {it.simpleString}
     }
 
-    fun dependsOn(name:Name):List<Name> =
+    private fun dependsOn(name:Name):List<Name> =
         nodeByName.getValue(name).dependsOn
 
-    fun dependsOn(cycle:Cycle):List<Name> =
+    private fun dependsOn(cycle:Cycle):List<Name> =
         cycle.parts.flatMap(::dependsOn).distinct().filter { !cycle.parts.contains(it)}
 
     fun depth(name:Name):Int {
@@ -75,7 +74,7 @@ data class Lookup(
 
     fun breadth(name:Name):Int = nodeByName.getValue(name).dependsOn.size
 
-    fun transitiveNames(name:Name):List<Name> {
+    private fun transitiveNames(name:Name):List<Name> {
         val node = nodeByName.getValue(name)
         val cycle = cycleByName[name]
         return if(cycle == null){
@@ -97,7 +96,7 @@ data class Lookup(
     fun dependsOn(context:List<String>, target:String):List<String> =
         descend(context).flatten().dependsOn(target)
 
-    fun cycleFor(target:String):List<String> {
+    private fun cycleFor(target:String):List<String> {
         val name = Name.fromString(target)
         return cycleByName[name]?.parts?.map{it.simpleString} ?: emptyList()
     }
@@ -113,7 +112,7 @@ data class Lookup(
         return firstCycle to relation
     }
 
-    fun report():List<String> {
+    private fun report():List<String> {
         val header = listOf("digraph detangled {")
         val singles = namesNotInRelation.map {
             "  ${it.simpleString}"
