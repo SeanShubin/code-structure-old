@@ -53,7 +53,7 @@ data class Lookup(
     }
 
     fun report(context: List<String>): Report {
-        val name = (listOf("dependencies") + context).joinToString("-") + ".txt"
+        val name = (listOf("dependencies") + context).joinToString("-")
         val lines = descend(context).flatten().report()
         return Report(name, lines)
     }

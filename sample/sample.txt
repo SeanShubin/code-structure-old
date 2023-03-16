@@ -1,0 +1,10 @@
+a.b -> c.d
+g.h -> c.d
+g.h -> i.j
+e.f.k -> e.f.l
+e.f.l -> e.f.m
+e.f.m -> e.f.n
+e.f.n -> e.f.l
+e.f.n -> e.f.o
+c.d -> e.f.l
+e.f.n -> g.h

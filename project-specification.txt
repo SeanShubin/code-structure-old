@@ -41,9 +41,10 @@
   global [ stdlib test ]
   modules {
     console       [ domain ]
-    domain        [ contract contract-test]
+    domain        [ contract contract-test process ]
     contract-test [ contract ]
     contract      []
+    process       [ coroutines ]
   }
   detangler [domain]
   consoleEntryPoint {

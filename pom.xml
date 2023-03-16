@@ -57,6 +57,7 @@
         <module>domain</module>
         <module>contract-test</module>
         <module>contract</module>
+        <module>process</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

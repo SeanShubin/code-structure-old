@@ -184,7 +184,7 @@ class LookupTest {
 
         // then
         val actualText = actual.lines.joinToString("\n")
-        val actualName = actual.name
+        val actualName = actual.baseName
         assertEquals(expectedText, actualText)
         assertEquals(expectedName, actualName)
     }
