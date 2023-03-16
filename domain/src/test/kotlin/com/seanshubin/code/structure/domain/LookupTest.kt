@@ -199,10 +199,11 @@ class LookupTest {
         assertEquals(0, lookup.descendant(name))
     }
 
-    private fun Lookup.assertChildren(contextString: String, vararg expected: String) {
+    private fun Lookup.assertChildren(contextString: String, vararg expectedStrings: String) {
         val context = if (contextString == "") emptyList() else contextString.split(".")
         val actual = children(context)
-        assertEquals(expected.toList(), actual)
+        val expected = expectedStrings.map { Name.fromString(it)}
+        assertEquals(expected, actual)
     }
 
     private fun Lookup.assertDependsOn(contextString: String, target: String, vararg expected: String) {

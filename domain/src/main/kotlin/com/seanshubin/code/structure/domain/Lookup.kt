@@ -37,11 +37,8 @@ data class Lookup(
         return fromNamesAndRelations(newNames, newRelations)
     }
 
-    private fun children(): List<String> =
-        names.map { it.simpleString }
-
-    fun children(context: List<String>): List<String> =
-        descend(context).flatten().children()
+    fun children(context: List<String>): List<Name> =
+        descend(context).flatten().names
 
     private fun dependsOn(target: String): List<String> {
         val name = Name.fromString(target)
