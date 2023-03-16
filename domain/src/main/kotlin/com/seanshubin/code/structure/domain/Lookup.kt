@@ -47,6 +47,11 @@ data class Lookup(
     fun namesInCycle(context: List<String>, name: Name): List<Name> =
         descend(context).flatten().namesInCycle(name)
 
+    fun reportableContexts(): List<List<String>> {
+        val allContexts = listOf(listOf<String>()) + names.map{it.parts}
+        return allContexts.filter { children(it).isNotEmpty() }
+    }
+
     fun report(context: List<String>): Report {
         val name = (listOf("dependencies") + context).joinToString("-") + ".txt"
         val lines = descend(context).flatten().report()

@@ -199,6 +199,28 @@ class LookupTest {
         assertEquals(0, lookup.descendant(name))
     }
 
+    @Test
+    fun reportableContexts() {
+        // given
+        val lookup = Lookup.fromLines(sample)
+        val expected = listOf(
+            listOf(),
+            listOf("a"),
+            listOf("c"),
+            listOf("e"),
+            listOf("e", "f"),
+            listOf("g"),
+            listOf("i")
+        )
+
+        // when
+        val actual = lookup.reportableContexts()
+
+        // then
+        assertEquals(expected, actual)
+    }
+
+
     private fun Lookup.assertChildren(contextString: String, vararg expectedStrings: String) {
         val context = if (contextString == "") emptyList() else contextString.split(".")
         val actual = children(context)
