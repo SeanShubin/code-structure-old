@@ -40,22 +40,13 @@ data class Lookup(
     fun children(context: List<String>): List<Name> =
         descend(context).flatten().names
 
-    private fun dependsOn(target: String): List<String> {
-        val name = Name.fromString(target)
-        val node = nodeByName[name]
-        val dependsOn = if (node == null) {
-            emptyList()
-        } else {
-            node.dependsOn
-        }
-        return dependsOn.map { it.simpleString }
+    private fun dependsOnNames(name: Name): List<Name> {
+        val node = nodeByName.getValue(name)
+        return node.dependsOn
     }
 
-    private fun dependsOn(name: Name): List<Name> =
-        nodeByName.getValue(name).dependsOn
-
-    private fun dependsOn(cycle: Cycle): List<Name> =
-        cycle.parts.flatMap(::dependsOn).distinct().filter { !cycle.parts.contains(it) }
+    private fun dependsOnNames(cycle: Cycle): List<Name> =
+        cycle.parts.flatMap(::dependsOnNames).distinct().filter { !cycle.parts.contains(it) }
 
     fun depth(name: Name): Int {
         val node = nodeByName.getValue(name)
@@ -65,7 +56,7 @@ data class Lookup(
             val maxDepthDependsOn = dependsOn.maxOfOrNull(::depth) ?: 0
             maxDepthDependsOn + 1
         } else {
-            val dependsOn = dependsOn(cycle)
+            val dependsOn = dependsOnNames(cycle)
             val maxDepthDependsOn = dependsOn.maxOfOrNull(::depth) ?: 0
             maxDepthDependsOn + cycle.size
         }
@@ -81,7 +72,7 @@ data class Lookup(
             val descendents = immediate.flatMap(::transitiveNames)
             (immediate + descendents).sorted().distinct()
         } else {
-            val dependsOn = dependsOn(cycle)
+            val dependsOn = dependsOnNames(cycle)
             val descendents = dependsOn.flatMap(::transitiveNames)
             (cycle.parts + dependsOn + descendents).sorted().distinct().filter { it != name }
         }
@@ -91,9 +82,8 @@ data class Lookup(
 
     fun descendant(name: Name): Int = names.filter { it.startsWith(name) && it != name }.size
 
-
-    fun dependsOn(context: List<String>, target: String): List<String> =
-        descend(context).flatten().dependsOn(target)
+    fun dependsOnNames(context: List<String>, target: Name): List<Name> =
+        descend(context).flatten().dependsOnNames(target)
 
     private fun cycleFor(target: String): List<String> {
         val name = Name.fromString(target)
