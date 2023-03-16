@@ -85,13 +85,12 @@ data class Lookup(
     fun dependsOnNames(context: List<String>, target: Name): List<Name> =
         descend(context).flatten().dependsOnNames(target)
 
-    private fun cycleFor(target: String): List<String> {
-        val name = Name.fromString(target)
-        return cycleByName[name]?.parts?.map { it.simpleString } ?: emptyList()
+    private fun namesInCycle(name: Name): List<Name> {
+        return cycleByName[name]?.parts?.map { it } ?: emptyList()
     }
 
-    fun cycleFor(context: List<String>, target: String): List<String> =
-        descend(context).flatten().cycleFor(target)
+    fun namesInCycle(context: List<String>, name: Name): List<Name> =
+        descend(context).flatten().namesInCycle(name)
 
     private fun toCycleAndRelation(relation: Relation): Pair<Cycle, Relation>? {
         val (first, second) = relation

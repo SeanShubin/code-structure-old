@@ -214,9 +214,11 @@ class LookupTest {
         assertEquals(expected, actual)
     }
 
-    private fun Lookup.assertInCycle(contextString: String, target: String, vararg expected: String) {
+    private fun Lookup.assertInCycle(contextString: String, target: String, vararg expectedStrings: String) {
         val context = if (contextString == "") emptyList() else contextString.split(".")
-        val actual = cycleFor(context, target)
-        assertEquals(expected.toList(), actual)
+        val name = Name.fromString(target)
+        val actual = namesInCycle(context, name)
+        val expected = expectedStrings.map{Name.fromString(it)}
+        assertEquals(expected, actual)
     }
 }
