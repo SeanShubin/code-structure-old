@@ -4,7 +4,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class LookupTest {
-    val nullMakeLink:(Name)->String? = { null}
+    val nullMakeLink: (Name) -> String? = { null }
     val sample = """
             a.b -> c.d
             g.h -> c.d

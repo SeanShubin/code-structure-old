@@ -68,7 +68,7 @@ data class Lookup(
 
     fun makeLinkFunction(contexts: List<List<String>>, context: List<String>): (Name) -> String? = { name: Name ->
         val target = context + name.parts
-        if(contexts.contains(target)){
+        if (contexts.contains(target)) {
             val link = (listOf("dependencies") + context + name.parts).joinToString("-")
             "$link.svg"
         } else {
@@ -148,7 +148,7 @@ data class Lookup(
         val header = listOf("digraph detangled {")
         val singles = names.map {
             val link = makeLink(it)
-            if(link == null) {
+            if (link == null) {
                 "  ${it.simpleString}"
             } else {
                 "  ${it.simpleString} [URL=\"$link\" fontcolor=Blue]"
