@@ -18,7 +18,7 @@ object CycleUtil {
             }
         }
         val inCycle = vertices.indices.filter { adjacencyMatrix[it][it] }
-        val cycles= inCycle.map { target ->
+        val cycles = inCycle.map { target ->
             val thisCanReachOther = vertices.indices.filter { adjacencyMatrix[target][it] }.toSet()
             val otherCanReachThis = vertices.indices.filter { adjacencyMatrix[it][target] }.toSet()
             val cycleIndices = thisCanReachOther intersect otherCanReachThis
