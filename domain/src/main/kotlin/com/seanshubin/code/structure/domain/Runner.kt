@@ -7,12 +7,22 @@ class Runner(
     val args: Array<String>,
     val files: FilesContract,
     val exit: (Int) -> Nothing,
-    val emitLine: (String) -> Unit,
-    val svgGenerator: SvgGenerator
+    val svgGenerator: SvgGenerator,
+    val timeTaken:(Long) -> Unit,
+    val error:(String)->Nothing
+
 ) : Runnable {
     override fun run() {
-        val inputFileName = args.getOrNull(0) ?: throwError("first parameter must be input file")
-        val reportDirName = args.getOrNull(1) ?: throwError("second parameter must be report directory")
+        val startTime = System.currentTimeMillis()
+        notTimed()
+        val endTime = System.currentTimeMillis()
+        val duration  = endTime - startTime
+        timeTaken(duration)
+    }
+
+    private fun notTimed(){
+        val inputFileName = args.getOrNull(0) ?: error("first parameter must be input file")
+        val reportDirName = args.getOrNull(1) ?: error("second parameter must be report directory")
         val reportDir = Paths.get(reportDirName)
         val inputFile = Paths.get(inputFileName)
         val inputLines = files.readAllLines(inputFile)
@@ -30,10 +40,5 @@ class Runner(
             svgGenerator.generate(reportDir, dotName, svgName)
         }
         reports.forEach(::writeReport)
-    }
-
-    private fun throwError(message: String): Nothing {
-        emitLine(message)
-        exit(1)
     }
 }
