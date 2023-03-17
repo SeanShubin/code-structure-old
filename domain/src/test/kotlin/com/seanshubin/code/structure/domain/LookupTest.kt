@@ -29,11 +29,11 @@ class LookupTest {
             b -> a
         """.trimIndent().split('\n')
         val actual = Lookup.fromLines(lines)
-        assertEquals(listOf("a", "b", "c"), actual.names.map { it.simpleString })
-        assertEquals(listOf("a->b", "b->a", "b->c"), actual.relations.map { it.simpleString })
-        assertEquals(listOf("a->[b]", "b->[a c]", "c->[]"), actual.nodes.map { it.simpleString })
-        assertEquals(listOf("a->[b]", "b->[a]", "c->[b]"), actual.reversedNodes.map { it.simpleString })
-        assertEquals(listOf("a b"), actual.cycles.map { it.simpleString })
+        assertEquals(listOf("a", "b", "c"), actual.names.map { it.toLine() })
+        assertEquals(listOf("a->b", "b->a", "b->c"), actual.relations.map { it.toLine() })
+        assertEquals(listOf("a->[b]", "b->[a c]", "c->[]"), actual.nodes.map { it.toLine() })
+        assertEquals(listOf("a->[b]", "b->[a]", "c->[b]"), actual.reversedNodes.map { it.toLine() })
+        assertEquals(listOf("a b"), actual.cycles.map { it.toLine() })
     }
 
     @Test
@@ -259,5 +259,26 @@ class LookupTest {
         val actual = namesInCycle(context, name)
         val expected = expectedStrings.map { Name.fromString(it) }
         assertEquals(expected, actual)
+    }
+
+    fun Name.toLine(): String = parts.joinToString(".")
+    fun Relation.toLine(): String = "${first.toLine()}->${second.toLine()}"
+    fun Node.toLine(): String {
+        val nameString = name.toLine()
+        val dependsOnString = dependsOn.map { it.toLine() }.joinToString(" ", "[", "]")
+        return "$nameString->$dependsOnString"
+    }
+    fun Cycle.toLine(): String = parts.joinToString(" ") { it.toLine() }
+    fun Lookup.toLines(): List<String> {
+        val nameLines = names.map { it.toLine() }.map { "  $it" }
+        val relationLines = relations.map { it.toLine() }.map { "  $it" }
+        val nodeLines = nodes.map { it.toLine() }.map { "  $it" }
+        val reversedNodeLines = reversedNodes.map { it.toLine() }.map { "  $it" }
+        val cycleLines = cycles.map { it.toLine() }.map { "  $it" }
+        return listOf("names") + nameLines +
+                listOf("relations") + relationLines +
+                listOf("nodes") + nodeLines +
+                listOf("reversedNodes") + reversedNodeLines +
+                listOf("cycles") + cycleLines
     }
 }

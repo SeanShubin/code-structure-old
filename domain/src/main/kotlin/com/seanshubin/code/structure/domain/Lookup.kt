@@ -78,24 +78,11 @@ data class Lookup(
         }
     }
 
-    fun toLines(): List<String> {
-        val nameLines = names.map { it.simpleString }.map { "  $it" }
-        val relationLines = relations.map { it.simpleString }.map { "  $it" }
-        val nodeLines = nodes.map { it.simpleString }.map { "  $it" }
-        val reversedNodeLines = reversedNodes.map { it.simpleString }.map { "  $it" }
-        val cycleLines = cycles.map { it.simpleString }.map { "  $it" }
-        return listOf("names") + nameLines +
-                listOf("relations") + relationLines +
-                listOf("nodes") + nodeLines +
-                listOf("reversedNodes") + reversedNodeLines +
-                listOf("cycles") + cycleLines
-    }
-
     private fun descendantNames(name: Name): List<Name> = names.filter { it.startsWith(name) && it != name }
 
     private fun descend(target: String): Lookup {
         val existing = descendCache[target]
-        return if(existing == null) {
+        return if (existing == null) {
             val newNames = names.mapNotNull { it.descend(target) }
             val newRelations = relations.mapNotNull { it.descend(target) }
             val newValue = fromNamesAndRelations(newNames, newRelations)
@@ -154,15 +141,16 @@ data class Lookup(
     }
 
     private fun reportAll(makeLink: (Name) -> String?): List<String> {
-        fun Name.dotString():String  {
-            val unquoted = if(this.parts.isEmpty()){
+        fun Name.dotString(): String {
+            val unquoted = if (this.parts.isEmpty()) {
                 "--ancestors--"
-            }else {
+            } else {
                 parts.joinToString(".")
             }
             val quoted = "\"$unquoted\""
             return quoted
         }
+
         val header = listOf("digraph detangled {")
         val singles = names.map {
             val dotString = it.dotString()
