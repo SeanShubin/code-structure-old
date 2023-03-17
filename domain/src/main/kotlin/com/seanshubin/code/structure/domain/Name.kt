@@ -1,14 +1,8 @@
 package com.seanshubin.code.structure.domain
 
 data class Name(val parts: List<String>) : Comparable<Name> {
-    init {
-        require(parts.isNotEmpty()) {
-            "Name parts must not be empty"
-        }
-    }
-
     fun descend(target: String): Name? =
-        if (parts.size == 1) null
+        if (parts.isEmpty()) null
         else if (startsWith(listOf(target))) copy(parts = parts.drop(1))
         else null
 
@@ -24,7 +18,7 @@ data class Name(val parts: List<String>) : Comparable<Name> {
         Comparators.ListComparator<String>().compare(this.parts, other.parts)
 
     fun toHierarchy(): List<Name> =
-        if (parts.size == 1) listOf(this)
+        if (parts.size < 2) listOf(this)
         else toParent().toHierarchy() + this
 
     private fun toParent(): Name = copy(parts = parts.dropLast(1))

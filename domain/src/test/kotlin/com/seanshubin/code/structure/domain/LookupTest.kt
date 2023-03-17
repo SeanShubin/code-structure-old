@@ -311,15 +311,26 @@ class LookupTest {
             }
             dependencies-a
             digraph detangled {
+              "--ancestors--" [URL="dependencies.svg" fontcolor=Blue]
               "b"
+              "--ancestors--" -> "b"
             }
             dependencies-c
             digraph detangled {
+              "--ancestors--" [URL="dependencies.svg" fontcolor=Blue]
               "d"
+              "d" -> "--ancestors--"
             }
             dependencies-e
             digraph detangled {
+              "--ancestors--" [URL="dependencies.svg" fontcolor=Blue]
               "f"
+              subgraph cluster_0 {
+                penwidth=2
+                pencolor=Red
+                "--ancestors--" -> "f"
+                "f" -> "--ancestors--"
+              }
             }
         """.trimIndent()
         val lookup = Lookup.fromLines(input)

@@ -12,8 +12,6 @@ data class Lookup(
     private val nodeByName: Map<Name, Node> = nodes.associateBy { it.name }
     private val cycleByName: Map<Name, Cycle> =
         cycles.flatMap { cycle -> cycle.parts.map { name -> name to cycle } }.toMap()
-    private val namesInRelation: List<Name> = relations.flatMap { it.toList() }.sorted().distinct()
-    private val namesNotInRelation: List<Name> = names.filter { !namesInRelation.contains(it) }
     private val relationsByCycle: Map<Cycle, List<Relation>> =
         relations.mapNotNull(::toCycleAndRelation).fold(emptyMap(), ::collapseToList)
     private val relationsNotInCycle = relations.filter { toCycleAndRelation(it) == null }
@@ -56,7 +54,9 @@ data class Lookup(
 
     fun report(context: List<String>, makeLink: (Name) -> String?): Report {
         val name = (listOf("dependencies") + context).joinToString("-")
-        val lines = descend(context).flatten().reportAll(makeLink)
+        val descended = descend(context)
+        val flattened = descended.flatten()
+        val lines = flattened.reportAll(makeLink)
         return Report(name, lines)
     }
 
@@ -70,7 +70,10 @@ data class Lookup(
 
     fun makeLinkFunction(contexts: List<List<String>>, context: List<String>): (Name) -> String? = { name: Name ->
         val target = context + name.parts
-        if (contexts.contains(target)) {
+        if(name.parts.isEmpty()) {
+            val link = (listOf("dependencies") + context.dropLast(1)).joinToString("-")
+            "$link.svg"
+        } else if (contexts.contains(target)) {
             val link = (listOf("dependencies") + context + name.parts).joinToString("-")
             "$link.svg"
         } else {
@@ -83,7 +86,7 @@ data class Lookup(
     private fun descend(target: String): Lookup {
         val existing = descendCache[target]
         return if (existing == null) {
-            val newNames = names.mapNotNull { it.descend(target) }
+            val newNames = names.mapNotNull { it.descend(target) }.filter{it.parts.isNotEmpty()}
             val newRelations = relations.mapNotNull { it.descend(target) }
             val newValue = fromNamesAndRelations(newNames, newRelations)
             descendCache[target] = newValue
