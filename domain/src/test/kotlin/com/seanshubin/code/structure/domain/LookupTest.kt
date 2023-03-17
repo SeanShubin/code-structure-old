@@ -311,25 +311,25 @@ class LookupTest {
             }
             dependencies-a
             digraph detangled {
-              "--ancestors--" [URL="dependencies.svg" fontcolor=Blue]
+              "<parent>" [URL="dependencies.svg" fontcolor=Blue]
               "b"
-              "--ancestors--" -> "b"
+              "<parent>" -> "b"
             }
             dependencies-c
             digraph detangled {
-              "--ancestors--" [URL="dependencies.svg" fontcolor=Blue]
+              "<parent>" [URL="dependencies.svg" fontcolor=Blue]
               "d"
-              "d" -> "--ancestors--"
+              "d" -> "<parent>"
             }
             dependencies-e
             digraph detangled {
-              "--ancestors--" [URL="dependencies.svg" fontcolor=Blue]
+              "<parent>" [URL="dependencies.svg" fontcolor=Blue]
               "f"
               subgraph cluster_0 {
                 penwidth=2
                 pencolor=Red
-                "--ancestors--" -> "f"
-                "f" -> "--ancestors--"
+                "<parent>" -> "f"
+                "f" -> "<parent>"
               }
             }
         """.trimIndent()

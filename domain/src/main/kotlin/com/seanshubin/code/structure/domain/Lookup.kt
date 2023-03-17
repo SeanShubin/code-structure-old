@@ -146,7 +146,7 @@ data class Lookup(
     private fun reportAll(makeLink: (Name) -> String?): List<String> {
         fun Name.dotString(): String {
             val unquoted = if (this.parts.isEmpty()) {
-                "--ancestors--"
+                "<parent>"
             } else {
                 parts.joinToString(".")
             }
