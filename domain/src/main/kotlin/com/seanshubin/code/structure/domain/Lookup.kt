@@ -154,17 +154,29 @@ data class Lookup(
     }
 
     private fun reportAll(makeLink: (Name) -> String?): List<String> {
+        fun Name.dotString():String  {
+            val unquoted = if(this.parts.isEmpty()){
+                "--ancestors--"
+            }else {
+                parts.joinToString(".")
+            }
+            val quoted = "\"$unquoted\""
+            return quoted
+        }
         val header = listOf("digraph detangled {")
         val singles = names.map {
+            val dotString = it.dotString()
             val link = makeLink(it)
             if (link == null) {
-                "  \"${it.simpleString}\""
+                "  $dotString"
             } else {
-                "  \"${it.simpleString}\" [URL=\"$link\" fontcolor=Blue]"
+                "  $dotString [URL=\"$link\" fontcolor=Blue]"
             }
         }
         val notInCycle = relationsNotInCycle.map { (first, second) ->
-            "  \"${first.simpleString}\" -> \"${second.simpleString}\""
+            val firstDotString = first.dotString()
+            val secondDotString = second.dotString()
+            "  $firstDotString -> $secondDotString"
         }
         val inCycle = relationsByCycle.toList().flatMapIndexed { index, (cycle, relations) ->
             val beginCycle = listOf(
@@ -173,7 +185,9 @@ data class Lookup(
                 "    pencolor=Red"
             )
             val cycleBody = relations.map { relation ->
-                "    ${relation.first.simpleString} -> ${relation.second.simpleString}"
+                val firstDotString = relation.first.dotString()
+                val secondDotString = relation.second.dotString()
+                "    $firstDotString -> $secondDotString"
             }
             val endCycle = listOf(
                 "  }"

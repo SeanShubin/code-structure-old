@@ -165,17 +165,22 @@ class LookupTest {
     fun rootReport() {
         // given
         val lookup = Lookup.fromLines(sample)
-        val expectedName = "dependencies.txt"
+        val expectedName = "dependencies"
         val expectedText = """
             digraph detangled {
-              a -> c
-              g -> i
+              "a"
+              "c"
+              "e"
+              "g"
+              "i"
+              "a" -> "c"
+              "g" -> "i"
               subgraph cluster_0 {
                 penwidth=2
                 pencolor=Red
-                c -> e
-                e -> g
-                g -> c
+                "c" -> "e"
+                "e" -> "g"
+                "g" -> "c"
               }
             }
         """.trimIndent()
