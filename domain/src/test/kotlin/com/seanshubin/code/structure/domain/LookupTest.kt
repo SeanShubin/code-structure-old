@@ -230,12 +230,105 @@ class LookupTest {
     fun generateReports() {
         // given
         val lookup = Lookup.fromLines(sample)
+        val expected = """
+            dependencies
+            digraph detangled {
+              "a" [URL="dependencies-a.svg" fontcolor=Blue]
+              "c" [URL="dependencies-c.svg" fontcolor=Blue]
+              "e" [URL="dependencies-e.svg" fontcolor=Blue]
+              "g" [URL="dependencies-g.svg" fontcolor=Blue]
+              "i" [URL="dependencies-i.svg" fontcolor=Blue]
+              "a" -> "c"
+              "g" -> "i"
+              subgraph cluster_0 {
+                penwidth=2
+                pencolor=Red
+                "c" -> "e"
+                "e" -> "g"
+                "g" -> "c"
+              }
+            }
+            dependencies-a
+            digraph detangled {
+              "b"
+            }
+            dependencies-c
+            digraph detangled {
+              "d"
+            }
+            dependencies-e
+            digraph detangled {
+              "f" [URL="dependencies-e-f.svg" fontcolor=Blue]
+            }
+            dependencies-e-f
+            digraph detangled {
+              "k"
+              "l"
+              "m"
+              "n"
+              "o"
+              "k" -> "l"
+              "n" -> "o"
+              subgraph cluster_0 {
+                penwidth=2
+                pencolor=Red
+                "l" -> "m"
+                "m" -> "n"
+                "n" -> "l"
+              }
+            }
+            dependencies-g
+            digraph detangled {
+              "h"
+            }
+            dependencies-i
+            digraph detangled {
+              "j"
+            }
+        """.trimIndent()
 
         // when
-        val actual = lookup.generateReports()
+        val actual = lookup.generateReports().flatMap { it.toLines() }.joinToString("\n")
 
         // then
-        actual.flatMap { it.toLines() }.forEach(::println)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun parentChild() {
+        val input = """
+            a -> a.b
+            c.d -> c
+            e.f -> e
+            e -> e.f
+        """.trimIndent().split("\n")
+        val expected = """
+            dependencies
+            digraph detangled {
+              "a" [URL="dependencies-a.svg" fontcolor=Blue]
+              "c" [URL="dependencies-c.svg" fontcolor=Blue]
+              "e" [URL="dependencies-e.svg" fontcolor=Blue]
+            }
+            dependencies-a
+            digraph detangled {
+              "b"
+            }
+            dependencies-c
+            digraph detangled {
+              "d"
+            }
+            dependencies-e
+            digraph detangled {
+              "f"
+            }
+        """.trimIndent()
+        val lookup = Lookup.fromLines(input)
+
+        // when
+        val actual = lookup.generateReports().flatMap { it.toLines() }.joinToString("\n")
+
+        // then
+        assertEquals(expected, actual)
     }
 
     private fun Lookup.assertChildren(contextString: String, vararg expectedStrings: String) {
@@ -268,6 +361,7 @@ class LookupTest {
         val dependsOnString = dependsOn.map { it.toLine() }.joinToString(" ", "[", "]")
         return "$nameString->$dependsOnString"
     }
+
     fun Cycle.toLine(): String = parts.joinToString(" ") { it.toLine() }
     fun Lookup.toLines(): List<String> {
         val nameLines = names.map { it.toLine() }.map { "  $it" }
@@ -281,4 +375,6 @@ class LookupTest {
                 listOf("reversedNodes") + reversedNodeLines +
                 listOf("cycles") + cycleLines
     }
+
+    fun Report.toLines(): List<String> = listOf(baseName) + lines
 }
