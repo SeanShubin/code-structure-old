@@ -73,6 +73,12 @@ class DetailTest {
             val children = detail.children().toLine()
             return "$name $children"
         }
+
+        // when
+        val actual = detail.flattenChildren().joinToString("\n") { childLine(it) }
+
+        // then
+        assertEquals(expected, actual)
     }
 
     @Test
