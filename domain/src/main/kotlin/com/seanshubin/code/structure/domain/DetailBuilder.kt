@@ -3,12 +3,12 @@ package com.seanshubin.code.structure.domain
 import com.seanshubin.code.structure.domain.FoldFunctions.collapseToList
 
 object DetailBuilder {
-    fun fromLines(lines: List<String>): DetailContract {
+    fun fromLines(lines: List<String>): Detail {
         val (parsedNames, parsedRelations) = Format.parseInputLines(lines)
         return fromNamesAndRelations(parsedNames, parsedRelations)
     }
 
-    private fun fromNamesAndRelations(originNames: List<Name>, originRelations: List<Relation>): DetailContract {
+    private fun fromNamesAndRelations(originNames: List<Name>, originRelations: List<Relation>): Detail {
         val rootName = Name(emptyList())
         val relationNames =originRelations.flatMap { it.toList()}
         val leafNames = listOf(rootName) + originNames + relationNames
@@ -87,7 +87,7 @@ object DetailBuilder {
         fun computeTransitive(name: Name): Int =
             computeTransitiveList(name).size
 
-        fun computeDetail(name: Name): Detail {
+        fun computeDetail(name: Name): DetailValue {
             val dependsOn: List<Name> = computeDependsOn(name)
             val dependedOnBy: List<Name> = computeDependedOnBy(name)
             val children: List<Name> = computeChildren(name)
@@ -97,7 +97,7 @@ object DetailBuilder {
             val depth: Int = computeDepth(name)
             val transitive: Int = computeTransitive(name)
             val transitiveList: List<Name> = computeTransitiveList(name)
-            return Detail(
+            return DetailValue(
                 name,
                 dependsOn,
                 dependedOnBy,
@@ -115,7 +115,7 @@ object DetailBuilder {
             name to computeDetail(name)
         }.toMap()
         val rootValue = detailMap.getValue(rootName)
-        return DetailImpl(detailMap, rootValue)
+        return DetailLookup(detailMap, rootValue)
     }
 
     private fun constructNodes(names: List<Name>, relations: List<Relation>): List<Node> {
