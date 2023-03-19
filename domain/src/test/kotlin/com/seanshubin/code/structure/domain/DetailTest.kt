@@ -70,9 +70,9 @@ class DetailTest {
             i.j []
         """.trimIndent()
 
-        fun childLine(detail: Detail): String {
+        fun childLine(detail: DetailContract): String {
             val name = detail.name.toLine()
-            val children = detail.children().toLine()
+            val children = detail.children.toLine()
             return "$name $children"
         }
 
@@ -105,9 +105,9 @@ class DetailTest {
             i []
             i.j []
         """.trimIndent()
-        fun dependsOnLine(detail:Detail):String {
+        fun dependsOnLine(detail:DetailContract):String {
             val name = detail.name.toLine()
-            val dependsOn = detail.dependsOn().toLine()
+            val dependsOn = detail.dependsOn.toLine()
             return "$name $dependsOn"
         }
 
@@ -140,9 +140,9 @@ class DetailTest {
             i []
             i.j [g.h]
         """.trimIndent()
-        fun dependedOnByLine(detail:Detail):String {
+        fun dependedOnByLine(detail:DetailContract):String {
             val name = detail.name.toLine()
-            val dependedOnBy = detail.dependedOnBy().toLine()
+            val dependedOnBy = detail.dependedOnBy.toLine()
             return "$name $dependedOnBy"
         }
 
@@ -175,9 +175,9 @@ class DetailTest {
             i []
             i.j []
         """.trimIndent()
-        fun cycleLine(detail:Detail):String {
+        fun cycleLine(detail:DetailContract):String {
             val name = detail.name.toLine()
-            val cycle = detail.cycleExcludingThis().toLine()
+            val cycle = detail.cycleExcludingThis.toLine()
             return "$name $cycle"
         }
 
@@ -210,7 +210,7 @@ class DetailTest {
             i 0
             i.j 0
         """.trimIndent()
-        fun depthLine(detail:Detail):String {
+        fun depthLine(detail:DetailContract):String {
             val name = detail.name.toLine()
             val depth = detail.depth
             return "$name $depth"
@@ -245,7 +245,7 @@ class DetailTest {
             i 0
             i.j 0
         """.trimIndent()
-        fun transitiveLine(detail:Detail):String {
+        fun transitiveLine(detail:DetailContract):String {
             val name = detail.name.toLine()
             val transitive = detail.transitive
             return "$name $transitive"
@@ -280,7 +280,7 @@ class DetailTest {
             i []
             i.j []
         """.trimIndent()
-        fun transitiveListLine(detail:Detail):String {
+        fun transitiveListLine(detail:DetailContract):String {
             val name = detail.name.toLine()
             val transitiveList = detail.transitiveList.toLine()
             return "$name $transitiveList"
@@ -294,5 +294,6 @@ class DetailTest {
     }
 
     private fun Name.toLine():String = if(parts.isEmpty()) "<root>" else parts.joinToString(".")
-    private fun List<Detail>.toLine():String = joinToString(" ", "[", "]") { it.name.toLine() }
+    private fun DetailContract.toLine() = name.toLine() 
+    private fun List<DetailContract>.toLine():String = joinToString(" ", "[", "]") { it.toLine() }
 }

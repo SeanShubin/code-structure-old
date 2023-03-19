@@ -3,59 +3,119 @@ package com.seanshubin.code.structure.domain
 import com.seanshubin.code.structure.domain.FoldFunctions.collapseToList
 
 object DetailBuilder {
-    fun fromLines(lines: List<String>): Detail {
+    fun fromLines(lines: List<String>): DetailContract {
         val (parsedNames, parsedRelations) = Format.parseInputLines(lines)
         return fromNamesAndRelations(parsedNames, parsedRelations)
     }
 
-    private fun fromNamesAndRelations(originNames: List<Name>, originRelations: List<Relation>): Detail {
-        val allNames =
-            (originNames + originRelations.flatMap { it.toList() }).flatMap { it.toHierarchy() }.sorted().distinct()
-        val relations = originRelations.filter { it.first != it.second }.sorted().distinct()
-        val reversedRelations = relations.map { it.reverse() }.sorted()
-        val cycleLists = CycleUtil.findCycles(relations.map { it.toPair() }.toSet())
-        val cycles = cycleLists.map { Cycle(it.toList().sorted()) }
-        val nodes = constructNodes(allNames, relations)
-        val reversedNodes = constructNodes(allNames, reversedRelations)
-        val nodeByName: Map<Name, Node> = nodes.associateBy { it.name }
-        val reversedNodeByName:Map<Name, Node> = reversedNodes.associateBy { it.name }
-        val cycleByName: Map<Name, Cycle> =
-            cycles.flatMap { cycle -> cycle.parts.map { name -> name to cycle } }.toMap()
-
-        fun isChildOf(parent: Name): (Name) -> Boolean = { child ->
-            val childExactlyOneHigher = child.parts.size == parent.parts.size + 1
-            val prefixMatches = child.parts.take(parent.parts.size) == parent.parts
-            childExactlyOneHigher && prefixMatches
-        }
-        val mutableDetailMap = allNames.map { name ->
-            name to Detail(name)
-        }.toMap()
-        fun computeDependsOn(name:Name):List<Detail> =
-            nodeByName.getValue(name).dependsOn.map{mutableDetailMap.getValue(it)}
-        fun computeDependedOnBy(name:Name):List<Detail> =
-            reversedNodeByName.getValue(name).dependsOn.map{mutableDetailMap.getValue(it)}
-        fun computeChildren(name:Name):List<Detail> =
-            allNames.filter(isChildOf(name)).map{mutableDetailMap.getValue(it)}
-        fun computeCycleExcludingThis(name:Name):List<Detail> =
-            (cycleByName[name]?.parts?.filterNot{it == name} ?: emptyList()).map{mutableDetailMap.getValue(it)}
-
-        allNames.forEach { name ->
-            val mutable = mutableDetailMap.getValue(name)
-            mutable.nullableDependsOn = computeDependsOn(name)
-            mutable.nullableDependedOnBy = computeDependedOnBy(name)
-            mutable.nullableChildren = computeChildren(name)
-            mutable.nullableCycleExcludingThis = computeCycleExcludingThis(name)
-        }
-
+    private fun fromNamesAndRelations(originNames: List<Name>, originRelations: List<Relation>): DetailContract {
         val rootName = Name(emptyList())
-        val rootDetail = Detail(
-            name = rootName,
-            nullableChildren = computeChildren(rootName),
-            nullableDependsOn = emptyList(),
-            nullableDependedOnBy = emptyList(),
-            nullableCycleExcludingThis = emptyList()
-        )
-        return rootDetail
+        val relationNames =originRelations.flatMap { it.toList()}
+        val leafNames = listOf(rootName) + originNames + relationNames
+        val allNames = leafNames.flatMap { it.toHierarchy() }.sorted().distinct()
+        val relations = originRelations.filter { it.first != it.second }.sorted().distinct()
+        val nodes = constructNodes(allNames, relations)
+        val nodeByName: Map<Name, Node> = nodes.associateBy { it.name }
+        val reversedRelations = relations.map { it.reverse() }.sorted()
+        val reversedNodes = constructNodes(allNames, reversedRelations)
+        val reversedNodeByName: Map<Name, Node> = reversedNodes.associateBy { it.name }
+        val cycleLists = CycleUtil.findCycles(relations.map { it.toPair() }.toSet())
+        val cycles = cycleLists.map { it.toList().sorted() }
+        val cycleByName: Map<Name, List<Name>> =
+            cycles.flatMap { cycle -> cycle.map { name -> name to cycle } }.toMap()
+
+        fun computeDependsOn(name: Name): List<Name> {
+            val node = nodeByName.getValue(name)
+            return node.dependsOn
+        }
+
+        fun computeDependedOnBy(name: Name): List<Name> {
+            val node = reversedNodeByName.getValue(name)
+            return node.dependsOn
+        }
+
+        fun computeChildren(parent: Name): List<Name> {
+            val isChildOf = { child: Name ->
+                val childExactlyOneHigher = child.parts.size == parent.parts.size + 1
+                val prefixMatches = child.parts.take(parent.parts.size) == parent.parts
+                childExactlyOneHigher && prefixMatches
+            }
+            val result = allNames.filter(isChildOf).sorted().distinct()
+            return result
+        }
+
+        fun computeCycleExcludingThis(name:Name):List<Name> {
+            val cycle = cycleByName[name] ?: emptyList()
+            return cycle.filterNot { it == name}
+        }
+
+        fun computeCycleIncludingThis(name:Name):List<Name> =
+            cycleByName[name] ?: emptyList()
+
+        fun computeThisOrCycleDependsOn(name: Name): List<Name> {
+            val thisOrCycle = cycleByName[name] ?: listOf(name)
+            val dependenciesOutsideOfCycle = thisOrCycle.flatMap { current ->
+                val node = nodeByName.getValue(current)
+                node.dependsOn.filterNot{thisOrCycle.contains(it) }
+            }.sorted().distinct()
+            return dependenciesOutsideOfCycle
+        }
+
+        fun computeTransitiveList(name: Name): List<Name> {
+            val thisOrCycle = cycleByName[name] ?: listOf(name)
+            val dependenciesOutsideOfCycle = thisOrCycle.flatMap { current ->
+                val node = nodeByName.getValue(current)
+                node.dependsOn.filterNot{thisOrCycle.contains(it) }
+            }.distinct()
+            val cycleDependencies = thisOrCycle.filterNot{ it == name}
+            val outsideTransitiveDependencies = dependenciesOutsideOfCycle.flatMap {
+                computeTransitiveList(it)
+            }
+            return (cycleDependencies + dependenciesOutsideOfCycle + outsideTransitiveDependencies).sorted().distinct()
+        }
+
+        fun computeDepth(name: Name): Int {
+            val thisOrCycle = cycleByName[name] ?: listOf(name)
+            val dependenciesOutsideOfCycle = thisOrCycle.flatMap { current ->
+                val node = nodeByName.getValue(current)
+                node.dependsOn.filterNot{thisOrCycle.contains(it) }
+            }.sorted().distinct()
+            val max = dependenciesOutsideOfCycle.maxOfOrNull(::computeDepth) ?: -1
+            return max + thisOrCycle.size
+        }
+
+        fun computeTransitive(name: Name): Int =
+            computeTransitiveList(name).size
+
+        fun computeDetail(name: Name): Detail {
+            val dependsOn: List<Name> = computeDependsOn(name)
+            val dependedOnBy: List<Name> = computeDependedOnBy(name)
+            val children: List<Name> = computeChildren(name)
+            val cycleExcludingThis: List<Name> = computeCycleExcludingThis(name)
+            val cycleIncludingThis: List<Name> = computeCycleIncludingThis(name)
+            val thisOrCycleDependsOn: List<Name> = computeThisOrCycleDependsOn(name)
+            val depth: Int = computeDepth(name)
+            val transitive: Int = computeTransitive(name)
+            val transitiveList: List<Name> = computeTransitiveList(name)
+            return Detail(
+                name,
+                dependsOn,
+                dependedOnBy,
+                children,
+                cycleExcludingThis,
+                cycleIncludingThis,
+                thisOrCycleDependsOn,
+                depth,
+                transitive,
+                transitiveList
+            )
+        }
+
+        val detailMap = allNames.map { name ->
+            name to computeDetail(name)
+        }.toMap()
+        val rootValue = detailMap.getValue(rootName)
+        return DetailImpl(detailMap, rootValue)
     }
 
     private fun constructNodes(names: List<Name>, relations: List<Relation>): List<Node> {
