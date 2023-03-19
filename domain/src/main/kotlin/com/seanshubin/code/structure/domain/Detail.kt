@@ -3,6 +3,7 @@ package com.seanshubin.code.structure.domain
 class Detail(
     val name: Name,
     var nullableDependsOn: List<Detail>? = null,
+    var nullableDependedOnBy:List<Detail>? = null,
     var nullableChildren: List<Detail>? = null,
     var nullableCycleExcludingThis: List<Detail>? = null,
     var nullableDepth: Int? = null,
@@ -12,6 +13,7 @@ class Detail(
     override fun toString(): String = name.toString()
 
     fun dependsOn():List<Detail> = nullableDependsOn!!
+    fun dependedOnBy():List<Detail> = nullableDependedOnBy!!
     fun children():List<Detail> = nullableChildren!!
     fun cycleExcludingThis():List<Detail> = nullableCycleExcludingThis!!
     fun flattenChildren(): List<Detail> =

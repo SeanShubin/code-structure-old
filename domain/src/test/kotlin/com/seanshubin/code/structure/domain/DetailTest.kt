@@ -116,6 +116,40 @@ class DetailTest {
     }
 
     @Test
+    fun dependedOnBy(){
+        // given
+        val detail = DetailBuilder.fromLines(sample)
+        val expected = """
+            a []
+            a.b []
+            c []
+            c.d [a.b g.h]
+            e []
+            e.f []
+            e.f.k []
+            e.f.l [c.d e.f.k e.f.n]
+            e.f.m [e.f.l]
+            e.f.n [e.f.m]
+            e.f.o [e.f.n]
+            g []
+            g.h [e.f.n]
+            i []
+            i.j [g.h]
+        """.trimIndent()
+        fun dependedOnByLine(detail:Detail):String {
+            val name = detail.name.toLine()
+            val dependedOnBy = detail.dependedOnBy().toLine()
+            return "$name $dependedOnBy"
+        }
+
+        // when
+        val actual = detail.flattenChildren().joinToString("\n") { dependedOnByLine(it) }
+
+        // then
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun cycle(){
         // given
         val detail = DetailBuilder.fromLines(sample)
