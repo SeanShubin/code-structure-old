@@ -22,6 +22,7 @@ class DetailTest {
         // given
         val detail = DetailBuilder.fromLines(sample)
         val expected = """
+            <root>
             a
             a.b
             c
@@ -40,7 +41,7 @@ class DetailTest {
         """.trimIndent()
 
         // when
-        val actual = detail.flattenChildren().joinToString("\n") { it.name.toLine() }
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { it.name.toLine() }
 
         // then
         assertEquals(expected, actual)
@@ -51,6 +52,7 @@ class DetailTest {
         // given
         val detail = DetailBuilder.fromLines(sample)
         val expected = """
+            <root> [a c e g i]
             a [a.b]
             a.b []
             c [c.d]
@@ -75,7 +77,7 @@ class DetailTest {
         }
 
         // when
-        val actual = detail.flattenChildren().joinToString("\n") { childLine(it) }
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { childLine(it) }
 
         // then
         assertEquals(expected, actual)
@@ -86,6 +88,7 @@ class DetailTest {
         // given
         val detail = DetailBuilder.fromLines(sample)
         val expected = """
+            <root> []
             a []
             a.b [c.d]
             c []
@@ -109,7 +112,7 @@ class DetailTest {
         }
 
         // when
-        val actual = detail.flattenChildren().joinToString("\n") { dependsOnLine(it) }
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { dependsOnLine(it) }
 
         // then
         assertEquals(expected, actual)
@@ -120,6 +123,7 @@ class DetailTest {
         // given
         val detail = DetailBuilder.fromLines(sample)
         val expected = """
+            <root> []
             a []
             a.b []
             c []
@@ -143,7 +147,7 @@ class DetailTest {
         }
 
         // when
-        val actual = detail.flattenChildren().joinToString("\n") { dependedOnByLine(it) }
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { dependedOnByLine(it) }
 
         // then
         assertEquals(expected, actual)
@@ -154,6 +158,7 @@ class DetailTest {
         // given
         val detail = DetailBuilder.fromLines(sample)
         val expected = """
+            <root> []
             a []
             a.b []
             c []
@@ -177,7 +182,7 @@ class DetailTest {
         }
 
         // when
-        val actual = detail.flattenChildren().joinToString("\n") { cycleLine(it) }
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { cycleLine(it) }
 
         // then
         assertEquals(expected, actual)
@@ -188,6 +193,7 @@ class DetailTest {
         // given
         val detail = DetailBuilder.fromLines(sample)
         val expected = """
+            <root> 0
             a 0
             a.b 6
             c 0
@@ -211,7 +217,7 @@ class DetailTest {
         }
 
         // when
-        val actual = detail.flattenChildren().joinToString("\n") { depthLine(it) }
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { depthLine(it) }
 
         // then
         assertEquals(expected, actual)
@@ -222,6 +228,7 @@ class DetailTest {
         // given
         val detail = DetailBuilder.fromLines(sample)
         val expected = """
+            <root> 0
             a 0
             a.b 7
             c 0
@@ -245,7 +252,7 @@ class DetailTest {
         }
 
         // when
-        val actual = detail.flattenChildren().joinToString("\n") { transitiveLine(it) }
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { transitiveLine(it) }
 
         // then
         assertEquals(expected, actual)
@@ -256,6 +263,7 @@ class DetailTest {
         // given
         val detail = DetailBuilder.fromLines(sample)
         val expected = """
+            <root> []
             a []
             a.b [c.d e.f.l e.f.m e.f.n e.f.o g.h i.j]
             c []
@@ -279,12 +287,12 @@ class DetailTest {
         }
 
         // when
-        val actual = detail.flattenChildren().joinToString("\n") { transitiveListLine(it) }
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { transitiveListLine(it) }
 
         // then
         assertEquals(expected, actual)
     }
 
-    private fun Name.toLine():String = parts.joinToString(".")
+    private fun Name.toLine():String = if(parts.isEmpty()) "<root>" else parts.joinToString(".")
     private fun List<Detail>.toLine():String = joinToString(" ", "[", "]") { it.name.toLine() }
 }

@@ -50,7 +50,10 @@ object DetailBuilder {
         val rootName = Name(emptyList())
         val rootDetail = Detail(
             name = rootName,
-            nullableChildren = computeChildren(rootName)
+            nullableChildren = computeChildren(rootName),
+            nullableDependsOn = emptyList(),
+            nullableDependedOnBy = emptyList(),
+            nullableCycleExcludingThis = emptyList()
         )
         return rootDetail
     }

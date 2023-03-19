@@ -16,6 +16,7 @@ class Detail(
     fun dependedOnBy():List<Detail> = nullableDependedOnBy!!
     fun children():List<Detail> = nullableChildren!!
     fun cycleExcludingThis():List<Detail> = nullableCycleExcludingThis!!
+    fun thisAndFlattenedChildren(): List<Detail> = listOf(this) + flattenChildren()
     fun flattenChildren(): List<Detail> =
         children().flatMap { child ->
             listOf(child) + child.flattenChildren()
