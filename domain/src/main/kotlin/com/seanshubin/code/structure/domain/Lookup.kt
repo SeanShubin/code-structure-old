@@ -132,7 +132,7 @@ data class Lookup(
     }
 
     private fun namesInCycle(name: Name): List<Name> {
-        return cycleByName[name]?.parts?.map { it } ?: emptyList()
+        return cycleByName[name]?.parts ?: emptyList()
     }
 
     private fun toCycleAndRelation(relation: Relation): Pair<Cycle, Relation>? {
