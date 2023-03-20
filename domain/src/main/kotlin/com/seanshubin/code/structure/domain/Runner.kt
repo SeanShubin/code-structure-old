@@ -7,10 +7,10 @@ class Runner(
     val args: Array<String>,
     val files: FilesContract,
     val exit: (Int) -> Nothing,
+    val reportFormat:ReportFormat,
     val svgGenerator: SvgGenerator,
     val timeTaken:(Long) -> Unit,
     val error:(String)->Nothing
-
 ) : Runnable {
     override fun run() {
         val startTime = System.currentTimeMillis()
@@ -27,7 +27,7 @@ class Runner(
         val inputFile = Paths.get(inputFileName)
         val inputLines = files.readAllLines(inputFile)
         val detail = DetailBuilder.fromLines(inputLines)
-        val reports = detail.generateReports()
+        val reports = reportFormat.generateReports(detail)
         files.createDirectories(reportDir)
         fun writeReport(report: Report) {
             val baseName = report.name

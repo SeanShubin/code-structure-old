@@ -423,9 +423,10 @@ class DetailValueTest {
               "j"
             }
         """.trimIndent()
+        val reportFormat:ReportFormat = DotReportFormat()
 
         fun reportLines(detail:Detail):List<String> {
-            val report = detail.report() ?: return emptyList()
+            val report = reportFormat.report(detail) ?: return emptyList()
             val name = report.name
             val dotLines = report.dotLines
             return listOf(name) + dotLines
