@@ -72,7 +72,7 @@ class DetailValueTest {
 
         fun childLine(detail: Detail): String {
             val name = detail.name.toLine()
-            val children = detail.children.toLine()
+            val children = detail.children.listOfDetailToLine()
             return "$name $children"
         }
 
@@ -107,7 +107,7 @@ class DetailValueTest {
         """.trimIndent()
         fun dependsOnLine(detail:Detail):String {
             val name = detail.name.toLine()
-            val dependsOn = detail.dependsOn.toLine()
+            val dependsOn = detail.dependsOn.listOfDetailToLine()
             return "$name $dependsOn"
         }
 
@@ -142,7 +142,7 @@ class DetailValueTest {
         """.trimIndent()
         fun dependedOnByLine(detail:Detail):String {
             val name = detail.name.toLine()
-            val dependedOnBy = detail.dependedOnBy.toLine()
+            val dependedOnBy = detail.dependedOnBy.listOfDetailToLine()
             return "$name $dependedOnBy"
         }
 
@@ -177,7 +177,7 @@ class DetailValueTest {
         """.trimIndent()
         fun cycleLine(detail:Detail):String {
             val name = detail.name.toLine()
-            val cycle = detail.cycleExcludingThis.toLine()
+            val cycle = detail.cycleExcludingThis.listOfDetailToLine()
             return "$name $cycle"
         }
 
@@ -282,7 +282,7 @@ class DetailValueTest {
         """.trimIndent()
         fun transitiveListLine(detail:Detail):String {
             val name = detail.name.toLine()
-            val transitiveList = detail.transitiveList.toLine()
+            val transitiveList = detail.transitiveList.listOfDetailToLine()
             return "$name $transitiveList"
         }
 
@@ -293,7 +293,89 @@ class DetailValueTest {
         assertEquals(expected, actual)
     }
 
+    @Test
+    fun relationsNotInCycle(){
+        // given
+        val detail = DetailBuilder.fromLines(sample)
+        val expected = """
+            <root> [a->c g->i]
+            a []
+            a.b []
+            c []
+            c.d []
+            e []
+            e.f [e.f.k->e.f.l e.f.n->e.f.o]
+            e.f.k []
+            e.f.l []
+            e.f.m []
+            e.f.n []
+            e.f.o []
+            g []
+            g.h []
+            i []
+            i.j []
+        """.trimIndent()
+        fun relationsLine(detail:Detail):String {
+            val name = detail.name.toLine()
+            val relations = detail.relations().notInCycle.listOfRelationToLine()
+            return "$name $relations"
+        }
+
+        // when
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { relationsLine(it) }
+
+        // then
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun relationsInCycle(){
+        // given
+        val detail = DetailBuilder.fromLines(sample)
+        val expected = """
+            <root> [[c e g]->[c->e e->g g->c]]
+            a []
+            a.b []
+            c []
+            c.d []
+            e []
+            e.f [[e.f.l e.f.m e.f.n]->[e.f.l->e.f.m e.f.m->e.f.n e.f.n->e.f.l]]
+            e.f.k []
+            e.f.l []
+            e.f.m []
+            e.f.n []
+            e.f.o []
+            g []
+            g.h []
+            i []
+            i.j []
+        """.trimIndent()
+        fun relationsNotInCycleLine(detail:Detail):String {
+            val name = detail.name.toLine()
+            val relationsNotInCycle = detail.relations().cycles.listOfCycleToLine()
+            return "$name $relationsNotInCycle"
+        }
+
+        // when
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { relationsNotInCycleLine(it) }
+
+        // then
+        assertEquals(expected, actual)
+    }
+
     private fun Name.toLine():String = if(parts.isEmpty()) "<root>" else parts.joinToString(".")
+    private fun Relation.toLine():String = "${first.toLine()}->${second.toLine()}"
+    private fun List<Relation>.listOfRelationToLine():String = joinToString(" ", "[", "]") { it.toLine() }
     private fun Detail.toLine() = name.toLine()
-    private fun List<Detail>.toLine():String = joinToString(" ", "[", "]") { it.toLine() }
+    private fun List<Detail>.listOfDetailToLine():String = joinToString(" ", "[", "]") { it.toLine() }
+    private fun List<Name>.listOfNameToLine():String = joinToString(" ", "[", "]") { it.toLine() }
+    private fun Pair<List<Name>, List<Relation>>.cycleToLine():String {
+        val nameLine = first.listOfNameToLine()
+        val relationLine = second.listOfRelationToLine()
+        return "$nameLine->$relationLine"
+    }
+
+    private fun List<Pair<List<Name>, List<Relation>>>.listOfCycleToLine():String =
+        joinToString(" ", "[", "]") { it.cycleToLine() }
+
 }

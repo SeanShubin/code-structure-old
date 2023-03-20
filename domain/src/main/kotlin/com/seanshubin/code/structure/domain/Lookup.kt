@@ -1,6 +1,6 @@
 package com.seanshubin.code.structure.domain
 
-import com.seanshubin.code.structure.domain.FoldFunctions.collapseToList
+import com.seanshubin.code.structure.domain.FoldFunctions.collapseToMapOfList
 
 data class Lookup(
     val names: List<Name>,
@@ -13,7 +13,7 @@ data class Lookup(
     private val cycleByName: Map<Name, Cycle> =
         cycles.flatMap { cycle -> cycle.parts.map { name -> name to cycle } }.toMap()
     private val relationsByCycle: Map<Cycle, List<Relation>> =
-        relations.mapNotNull(::toCycleAndRelation).fold(emptyMap(), ::collapseToList)
+        relations.mapNotNull(::toCycleAndRelation).fold(emptyMap(), ::collapseToMapOfList)
     private val relationsNotInCycle = relations.filter { toCycleAndRelation(it) == null }
 
     val descendCache = mutableMapOf<String, Lookup>()
@@ -208,7 +208,7 @@ data class Lookup(
         }
 
         private fun constructNodes(names: List<Name>, relations: List<Relation>): List<Node> {
-            val dependsOnMapNoEmpty = relations.map { it.toPair() }.fold(mapOf(), ::collapseToList)
+            val dependsOnMapNoEmpty = relations.map { it.toPair() }.fold(mapOf(), ::collapseToMapOfList)
             val dependsOnMap = names.map { name ->
                 val existing = dependsOnMapNoEmpty[name]
                 if (existing == null) {

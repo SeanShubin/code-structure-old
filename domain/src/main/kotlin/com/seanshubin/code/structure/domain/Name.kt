@@ -1,5 +1,7 @@
 package com.seanshubin.code.structure.domain
 
+import com.seanshubin.code.structure.domain.Comparators.stringListComparator
+
 data class Name(val parts: List<String>) : Comparable<Name> {
     fun descend(target: String): Name? =
         if (parts.isEmpty()) null
@@ -14,12 +16,17 @@ data class Name(val parts: List<String>) : Comparable<Name> {
     }
 
     fun startsWith(name: Name): Boolean = startsWith(name.parts)
-    override fun compareTo(other: Name): Int =
-        Comparators.ListComparator<String>().compare(this.parts, other.parts)
+    override fun compareTo(other: Name): Int = stringListComparator.compare(this.parts, other.parts)
 
     fun toHierarchy(): List<Name> =
         if (parts.size < 2) listOf(this)
         else toParent().toHierarchy() + this
+
+    fun narrowToScope(scope:List<String>):Name? {
+        if(!startsWith(scope)) return null
+        if(parts.size <= scope.size) return null
+        return Name(parts.take(scope.size+1))
+    }
 
     private fun toParent(): Name = copy(parts = parts.dropLast(1))
 

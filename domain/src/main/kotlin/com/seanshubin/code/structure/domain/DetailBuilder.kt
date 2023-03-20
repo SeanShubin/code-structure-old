@@ -1,6 +1,6 @@
 package com.seanshubin.code.structure.domain
 
-import com.seanshubin.code.structure.domain.FoldFunctions.collapseToList
+import com.seanshubin.code.structure.domain.FoldFunctions.collapseToMapOfList
 
 object DetailBuilder {
     fun fromLines(lines: List<String>): Detail {
@@ -119,7 +119,7 @@ object DetailBuilder {
     }
 
     private fun constructNodes(names: List<Name>, relations: List<Relation>): List<Node> {
-        val dependsOnMapNoEmpty = relations.map { it.toPair() }.fold(mapOf(), ::collapseToList)
+        val dependsOnMapNoEmpty = relations.map { it.toPair() }.fold(mapOf(), ::collapseToMapOfList)
         val dependsOnMap = names.map { name ->
             val existing = dependsOnMapNoEmpty[name]
             if (existing == null) {
