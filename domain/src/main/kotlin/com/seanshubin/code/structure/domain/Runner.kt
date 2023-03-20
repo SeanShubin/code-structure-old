@@ -14,20 +14,20 @@ class Runner(
 ) : Runnable {
     override fun run() {
         val startTime = System.currentTimeMillis()
-        notTimed()
+        runMeInsideTimer()
         val endTime = System.currentTimeMillis()
         val duration  = endTime - startTime
         timeTaken(duration)
     }
 
-    private fun notTimed(){
+    private fun runMeInsideTimer(){
         val inputFileName = args.getOrNull(0) ?: error("first parameter must be input file")
         val reportDirName = args.getOrNull(1) ?: error("second parameter must be report directory")
         val reportDir = Paths.get(reportDirName)
         val inputFile = Paths.get(inputFileName)
         val inputLines = files.readAllLines(inputFile)
-        val lookup = Lookup.fromLines(inputLines)
-        val reports = lookup.generateReports()
+        val detail = DetailBuilder.fromLines(inputLines)
+        val reports = detail.generateReports()
         files.createDirectories(reportDir)
         fun writeReport(report: Report) {
             val baseName = report.name

@@ -113,4 +113,6 @@ interface Detail {
         val reportName = reportNameParts.joinToString("-")
         return Report(reportName, dotLines)
     }
+    fun generateReports():List<Report> =
+        thisAndFlattenedChildren().mapNotNull { it.report() }
 }
