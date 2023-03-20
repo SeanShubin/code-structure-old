@@ -63,32 +63,48 @@ interface Detail {
         return link
     }
 
+    fun composeLabel(detail:Detail):String {
+        val nameString = plainDotString(detail.name)
+        val amount = detail.flattenChildren().size
+        return nameString
+    }
+
+    fun plainDotString(name:Name):String =
+        if (name.parts.isEmpty()) {
+            "<parent>"
+        } else {
+            name.parts.last()
+        }
+
+    fun quotedDotString(name:Name):String = plainDotString(name).doubleQuote()
+
+    fun String.doubleQuote():String = "\"$this\""
+
     fun report(): Report? {
         if(children.isEmpty()) return null
-        fun Name.dotString(): String {
-            val unquoted = if (this.parts.isEmpty()) {
-                "<parent>"
-            } else {
-                parts.last()
-            }
-            val quoted = "\"$unquoted\""
-            return quoted
-        }
 
         val header = listOf("digraph detangled {")
         val singles = children.map { child ->
-            val dotString = child.name.dotString()
+            val nameString = quotedDotString(child.name)
             val link = makeLink(child)
-            if (link == null) {
-                "  $dotString"
+            val linkAttribute = if (link == null) {
+                emptyList()
             } else {
-                "  $dotString [URL=\"$link\" fontcolor=Blue]"
+                listOf("URL" to "\"$link\"", "fontcolor" to "Blue")
             }
+            val shapeAttribute = "shape" to "record"
+            val labelAttribute = "label" to composeLabel(child).doubleQuote()
+            val attributes = linkAttribute  + labelAttribute
+            val attributesString = attributes.map { (first, second) ->
+                "$first=$second"
+            }.joinToString(" ", "[", "]")
+            val line = listOf(nameString, attributesString).joinToString(" ", "  ")
+            line
         }
         val relations = relations()
         val notInCycle = relations.notInCycle.map { (first, second) ->
-            val firstDotString = first.dotString()
-            val secondDotString = second.dotString()
+            val firstDotString = quotedDotString(first)
+            val secondDotString = quotedDotString(second)
             "  $firstDotString -> $secondDotString"
         }
         val inCycle = relations.cycles.flatMapIndexed { index, (cycle, relations) ->
@@ -98,8 +114,8 @@ interface Detail {
                 "    pencolor=Red"
             )
             val cycleBody = relations.map { relation ->
-                val firstDotString = relation.first.dotString()
-                val secondDotString = relation.second.dotString()
+                val firstDotString = quotedDotString(relation.first)
+                val secondDotString = quotedDotString(relation.second)
                 "    $firstDotString -> $secondDotString"
             }
             val endCycle = listOf(
