@@ -30,12 +30,12 @@ class Runner(
         val reports = lookup.generateReports()
         files.createDirectories(reportDir)
         fun writeReport(report: Report) {
-            val baseName = report.baseName
+            val baseName = report.name
             val dotName = "$baseName.txt"
             val svgName = "$baseName.svg"
             val dotFile = reportDir.resolve(dotName)
             val svgFile = reportDir.resolve(svgName)
-            val reportLines = report.lines
+            val reportLines = report.dotLines
             files.write(dotFile, reportLines)
             svgGenerator.generate(reportDir, dotName, svgName)
         }

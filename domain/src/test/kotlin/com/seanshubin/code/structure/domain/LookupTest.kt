@@ -189,8 +189,8 @@ class LookupTest {
         val actual = lookup.report(listOf(), nullMakeLink)
 
         // then
-        val actualText = actual.lines.joinToString("\n")
-        val actualName = actual.baseName
+        val actualText = actual.dotLines.joinToString("\n")
+        val actualName = actual.name
         assertEquals(expectedText, actualText)
         assertEquals(expectedName, actualName)
     }
@@ -387,5 +387,5 @@ class LookupTest {
                 listOf("cycles") + cycleLines
     }
 
-    fun Report.toLines(): List<String> = listOf(baseName) + lines
+    fun Report.toLines(): List<String> = listOf(name) + dotLines
 }

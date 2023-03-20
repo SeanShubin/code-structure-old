@@ -54,4 +54,63 @@ interface Detail {
         }.toList().sortedWith(pairCycleListOfRelationComparator)
         return RelationsByType(relationsNotInCycle, relationsInCycle)
     }
+
+    fun makeLink(detail: Detail): String? {
+        if(detail.children.isEmpty()) return null
+        val baseLinkParts = listOf("dependencies") + detail.name.parts
+        val baseLink = baseLinkParts.joinToString("-")
+        val link = "$baseLink.svg"
+        return link
+    }
+
+    fun report(): Report? {
+        if(children.isEmpty()) return null
+        fun Name.dotString(): String {
+            val unquoted = if (this.parts.isEmpty()) {
+                "<parent>"
+            } else {
+                parts.last()
+            }
+            val quoted = "\"$unquoted\""
+            return quoted
+        }
+
+        val header = listOf("digraph detangled {")
+        val singles = children.map { child ->
+            val dotString = child.name.dotString()
+            val link = makeLink(child)
+            if (link == null) {
+                "  $dotString"
+            } else {
+                "  $dotString [URL=\"$link\" fontcolor=Blue]"
+            }
+        }
+        val relations = relations()
+        val notInCycle = relations.notInCycle.map { (first, second) ->
+            val firstDotString = first.dotString()
+            val secondDotString = second.dotString()
+            "  $firstDotString -> $secondDotString"
+        }
+        val inCycle = relations.cycles.flatMapIndexed { index, (cycle, relations) ->
+            val beginCycle = listOf(
+                "  subgraph cluster_$index {",
+                "    penwidth=2",
+                "    pencolor=Red"
+            )
+            val cycleBody = relations.map { relation ->
+                val firstDotString = relation.first.dotString()
+                val secondDotString = relation.second.dotString()
+                "    $firstDotString -> $secondDotString"
+            }
+            val endCycle = listOf(
+                "  }"
+            )
+            beginCycle + cycleBody + endCycle
+        }
+        val footer = listOf("}")
+        val dotLines =  header + singles + notInCycle + inCycle + footer
+        val reportNameParts = listOf("dependencies") + name.parts
+        val reportName = reportNameParts.joinToString("-")
+        return Report(reportName, dotLines)
+    }
 }

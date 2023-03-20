@@ -363,6 +363,81 @@ class DetailValueTest {
         assertEquals(expected, actual)
     }
 
+    @Test
+    fun generateReports() {
+        // given
+        val detail = DetailBuilder.fromLines(sample)
+        val expected = """
+            dependencies
+            digraph detangled {
+              "a" [URL="dependencies-a.svg" fontcolor=Blue]
+              "c" [URL="dependencies-c.svg" fontcolor=Blue]
+              "e" [URL="dependencies-e.svg" fontcolor=Blue]
+              "g" [URL="dependencies-g.svg" fontcolor=Blue]
+              "i" [URL="dependencies-i.svg" fontcolor=Blue]
+              "a" -> "c"
+              "g" -> "i"
+              subgraph cluster_0 {
+                penwidth=2
+                pencolor=Red
+                "c" -> "e"
+                "e" -> "g"
+                "g" -> "c"
+              }
+            }
+            dependencies-a
+            digraph detangled {
+              "b"
+            }
+            dependencies-c
+            digraph detangled {
+              "d"
+            }
+            dependencies-e
+            digraph detangled {
+              "f" [URL="dependencies-e-f.svg" fontcolor=Blue]
+            }
+            dependencies-e-f
+            digraph detangled {
+              "k"
+              "l"
+              "m"
+              "n"
+              "o"
+              "k" -> "l"
+              "n" -> "o"
+              subgraph cluster_0 {
+                penwidth=2
+                pencolor=Red
+                "l" -> "m"
+                "m" -> "n"
+                "n" -> "l"
+              }
+            }
+            dependencies-g
+            digraph detangled {
+              "h"
+            }
+            dependencies-i
+            digraph detangled {
+              "j"
+            }
+        """.trimIndent()
+
+        fun reportLines(detail:Detail):List<String> {
+            val report = detail.report() ?: return emptyList()
+            val name = report.name
+            val dotLines = report.dotLines
+            return listOf(name) + dotLines
+        }
+
+        // when
+        val actual = detail.thisAndFlattenedChildren().flatMap {reportLines(it) }.joinToString("\n")
+
+        // then
+        assertEquals(expected, actual)
+    }
+
     private fun Name.toLine():String = if(parts.isEmpty()) "<root>" else parts.joinToString(".")
     private fun Relation.toLine():String = "${first.toLine()}->${second.toLine()}"
     private fun List<Relation>.listOfRelationToLine():String = joinToString(" ", "[", "]") { it.toLine() }
