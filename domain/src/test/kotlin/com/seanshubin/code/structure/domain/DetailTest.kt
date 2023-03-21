@@ -372,6 +372,42 @@ class DetailTest {
     }
 
     @Test
+    fun aggregateDepth() {
+        // given
+        val detail = DetailBuilder.fromLines(sample)
+        val expected = """
+            <root> 6
+            a 6
+            a.b 6
+            c 5
+            c.d 5
+            e 6
+            e.f 6
+            e.f.k 6
+            e.f.l 5
+            e.f.m 5
+            e.f.n 5
+            e.f.o 0
+            g 5
+            g.h 5
+            i 0
+            i.j 0
+        """.trimIndent()
+
+        fun aggregateDepthLine(detail: Detail): String {
+            val name = detail.name.toLine()
+            val aggregateDepth = detail.aggregateDepth()
+            return "$name $aggregateDepth"
+        }
+
+        // when
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { aggregateDepthLine(it) }
+
+        // then
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun transitiveList() {
         // given
         val detail = DetailBuilder.fromLines(sample)

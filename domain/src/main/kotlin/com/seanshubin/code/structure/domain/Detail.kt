@@ -63,6 +63,11 @@ interface Detail {
     fun aggregateDependedOnByCount(): Int =
         aggregateDependencyCount { it.dependedOnBy }
 
+    fun aggregateDepth():Int {
+        val allChildren = thisAndFlattenedChildren()
+        return allChildren.maxOfOrNull { it.depth } ?: 0
+    }
+
     private fun aggregateDependencyCount(f: (Detail) -> List<Detail>): Int {
         val allChildren = thisAndFlattenedChildren()
         fun accumulateRelation(soFar: Set<Relation>, a: Detail): Set<Relation> {
