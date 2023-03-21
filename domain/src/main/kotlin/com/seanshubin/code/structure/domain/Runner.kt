@@ -23,11 +23,12 @@ class Runner(
     private fun runMeInsideTimer() {
         val inputFileName = args.getOrNull(0) ?: error("first parameter must be input file")
         val reportDirName = args.getOrNull(1) ?: error("second parameter must be report directory")
+        val reportStyleName = args.getOrNull(2) ?: error("third parameter must be a report style name")
         val reportDir = Paths.get(reportDirName)
         val inputFile = Paths.get(inputFileName)
         val inputLines = files.readAllLines(inputFile)
         val detail = DetailBuilder.fromLines(inputLines)
-        val reports = reportFormat.generateReports(detail)
+        val reports = reportFormat.generateReports(detail, reportStyleName)
         files.createDirectories(reportDir)
         fun writeReport(report: Report) {
             val baseName = report.name

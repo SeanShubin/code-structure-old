@@ -611,11 +611,17 @@ class DetailTest {
               "j" [label="j (0)"]
             }
         """.trimIndent()
-        val reportStyle: ReportStyle = SimpleReportStyle()
-        val reportFormat: ReportFormat = DotReportFormat(reportStyle)
+
+        val simpleReportStyle: ReportStyle = SimpleReportStyle()
+        val tableReportStyle:ReportStyle = TableReportStyle()
+        val reportStyleMap:Map<String, ReportStyle> = mapOf(
+            "simple" to simpleReportStyle,
+            "table" to tableReportStyle
+        )
+        val reportFormat: ReportFormat = DotReportFormat(reportStyleMap)
 
         fun reportLines(detail: Detail): List<String> {
-            val report = reportFormat.report(detail) ?: return emptyList()
+            val report = reportFormat.report(detail, "simple") ?: return emptyList()
             val name = report.name
             val dotLines = report.dotLines
             return listOf(name) + dotLines

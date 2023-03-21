@@ -20,8 +20,13 @@ class Dependencies(val args: Array<String>) {
         notifications::error,
         exit
     )
-    val reportStyle: ReportStyle = SimpleReportStyle()
-    val reportFormat: ReportFormat = DotReportFormat(reportStyle)
+    val simpleReportStyle: ReportStyle = SimpleReportStyle()
+    val tableReportStyle:ReportStyle = TableReportStyle()
+    val reportStyleMap:Map<String, ReportStyle> = mapOf(
+        "simple" to simpleReportStyle,
+        "table" to tableReportStyle
+    )
+    val reportFormat: ReportFormat = DotReportFormat(reportStyleMap)
     val runner: Runnable = Runner(
         args,
         files,
