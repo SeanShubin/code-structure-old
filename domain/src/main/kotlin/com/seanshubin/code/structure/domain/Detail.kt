@@ -54,4 +54,6 @@ interface Detail {
         }.toList().sortedWith(pairCycleListOfRelationComparator)
         return RelationsByType(relationsNotInCycle, relationsInCycle)
     }
+
+    fun aggregateChildCount():Int = flattenChildren().size
 }

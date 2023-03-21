@@ -264,6 +264,42 @@ class DetailTest {
     }
 
     @Test
+    fun aggregateChildCount() {
+        // given
+        val detail = DetailBuilder.fromLines(sample)
+        val expected = """
+            <root> 15
+            a 1
+            a.b 0
+            c 1
+            c.d 0
+            e 6
+            e.f 5
+            e.f.k 0
+            e.f.l 0
+            e.f.m 0
+            e.f.n 0
+            e.f.o 0
+            g 1
+            g.h 0
+            i 1
+            i.j 0
+        """.trimIndent()
+
+        fun aggregateChildCountLine(detail: Detail): String {
+            val name = detail.name.toLine()
+            val aggregateChildCount = detail.aggregateChildCount()
+            return "$name $aggregateChildCount"
+        }
+
+        // when
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { aggregateChildCountLine(it) }
+
+        // then
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun transitiveList() {
         // given
         val detail = DetailBuilder.fromLines(sample)
