@@ -1,7 +1,7 @@
 package com.seanshubin.code.structure.domain
 
 class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : ReportFormat {
-    override fun report(detail: Detail, style:String): Report? {
+    override fun report(detail: Detail, style: String): Report? {
         if (detail.children.isEmpty()) return null
         val header = listOf("digraph detangled {")
         val body = reportBody(detail, style).indent("  ")
@@ -11,10 +11,10 @@ class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : Re
         return Report(name, lines)
     }
 
-    override fun generateReports(detail: Detail, style:String): List<Report> =
-        detail.thisAndFlattenedChildren().mapNotNull{report(it, style)}
+    override fun generateReports(detail: Detail, style: String): List<Report> =
+        detail.thisAndFlattenedChildren().mapNotNull { report(it, style) }
 
-    private fun reportBody(detail: Detail, style:String): List<String> {
+    private fun reportBody(detail: Detail, style: String): List<String> {
         val singlesLines = reportSingles(detail.children, style)
         val relations = detail.relations()
         val relationsLines = reportRelations(relations.notInCycle)
@@ -22,10 +22,10 @@ class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : Re
         return singlesLines + relationsLines + cyclesLines
     }
 
-    private fun reportSingles(list: List<Detail>, style:String): List<String> =
-        list.map{reportSingle(it,style)}
+    private fun reportSingles(list: List<Detail>, style: String): List<String> =
+        list.map { reportSingle(it, style) }
 
-    private fun reportSingle(detail: Detail, style:String): String {
+    private fun reportSingle(detail: Detail, style: String): String {
         val reportStyle = reportStyleMap[style] ?: styleNotFound(style)
         val urlAttribute = makeUrlAttribute(detail)
         val unquotedName = composeNodeName(detail.name)
@@ -102,7 +102,7 @@ class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : Re
     private fun String.indent(prefix: String): String = "$prefix$this"
     private fun List<String>.indent(prefix: String): List<String> = map { it.indent(prefix) }
 
-    private fun styleNotFound(style:String):Nothing {
+    private fun styleNotFound(style: String): Nothing {
         val styleListString = reportStyleMap.keys.sorted().joinToString("', '", "'", "'")
         val message = "Style '$style' not found, expected one of $styleListString"
         throw RuntimeException(message)

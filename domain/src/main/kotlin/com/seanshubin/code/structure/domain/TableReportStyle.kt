@@ -16,7 +16,7 @@ class TableReportStyle : ReportStyle {
         val childCount = detail.aggregateChildCount()
         val depth = detail.aggregateDepth()
         val transitive = detail.aggregateTransitive()
-        val nameText = if(childCount == 0) name else "$name ($childCount)"
+        val nameText = if (childCount == 0) name else "$name ($childCount)"
         val labelText = """
         <
             <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">

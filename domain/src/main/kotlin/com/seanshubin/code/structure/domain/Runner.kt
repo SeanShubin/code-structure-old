@@ -6,9 +6,7 @@ import java.nio.file.Paths
 class Runner(
     val args: Array<String>,
     val files: FilesContract,
-    val exit: (Int) -> Nothing,
-    val reportFormat: ReportFormat,
-    val svgGenerator: SvgGenerator,
+    val reportGenerator: ReportGenerator,
     val timeTaken: (Long) -> Unit,
     val error: (String) -> Nothing
 ) : Runnable {
@@ -28,18 +26,6 @@ class Runner(
         val inputFile = Paths.get(inputFileName)
         val inputLines = files.readAllLines(inputFile)
         val detail = DetailBuilder.fromLines(inputLines)
-        val reports = reportFormat.generateReports(detail, reportStyleName)
-        files.createDirectories(reportDir)
-        fun writeReport(report: Report) {
-            val baseName = report.name
-            val dotName = "$baseName.txt"
-            val svgName = "$baseName.svg"
-            val dotFile = reportDir.resolve(dotName)
-            val svgFile = reportDir.resolve(svgName)
-            val reportLines = report.lines
-            files.write(dotFile, reportLines)
-            svgGenerator.generate(reportDir, dotName, svgName)
-        }
-        reports.forEach(::writeReport)
+        reportGenerator.generateReports(detail, reportDir, reportStyleName)
     }
 }

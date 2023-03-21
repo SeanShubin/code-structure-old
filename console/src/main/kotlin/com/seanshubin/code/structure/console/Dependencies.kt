@@ -7,32 +7,31 @@ import com.seanshubin.code.structure.process.ProcessRunner
 import com.seanshubin.code.structure.process.SystemProcessRunner
 
 class Dependencies(val args: Array<String>) {
-    val files: FilesContract = FilesDelegate
-    val exit: (Int) -> Nothing = { code ->
+    private val files: FilesContract = FilesDelegate
+    private val exit: (Int) -> Nothing = { code ->
         System.exit(code)
         throw RuntimeException("system exited with code $code")
     }
-    val emitLine: (String) -> Unit = ::println
-    val processRunner: ProcessRunner = SystemProcessRunner()
-    val svgGenerator: SvgGenerator = SvgGeneratorImpl(processRunner)
-    val notifications: Notifications = LineEmittingNotifications(emitLine)
-    val errorHandler: ErrorHandler = ErrorHandlerImpl(
+    private val emitLine: (String) -> Unit = ::println
+    private val processRunner: ProcessRunner = SystemProcessRunner()
+    private val svgGenerator: SvgGenerator = SvgGeneratorImpl(processRunner)
+    private val notifications: Notifications = LineEmittingNotifications(emitLine)
+    private val errorHandler: ErrorHandler = ErrorHandlerImpl(
         notifications::error,
         exit
     )
-    val simpleReportStyle: ReportStyle = SimpleReportStyle()
-    val tableReportStyle:ReportStyle = TableReportStyle()
-    val reportStyleMap:Map<String, ReportStyle> = mapOf(
+    private val simpleReportStyle: ReportStyle = SimpleReportStyle()
+    private val tableReportStyle: ReportStyle = TableReportStyle()
+    private val reportStyleMap: Map<String, ReportStyle> = mapOf(
         "simple" to simpleReportStyle,
         "table" to tableReportStyle
     )
-    val reportFormat: ReportFormat = DotReportFormat(reportStyleMap)
+    private val reportFormat: ReportFormat = DotReportFormat(reportStyleMap)
+    private val reportGenerator: ReportGenerator = ReportGeneratorImpl(reportFormat, files, svgGenerator)
     val runner: Runnable = Runner(
         args,
         files,
-        exit,
-        reportFormat,
-        svgGenerator,
+        reportGenerator,
         notifications::timeTaken,
         errorHandler::error
     )

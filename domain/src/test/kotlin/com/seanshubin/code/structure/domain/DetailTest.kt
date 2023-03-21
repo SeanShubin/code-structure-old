@@ -613,8 +613,8 @@ class DetailTest {
         """.trimIndent()
 
         val simpleReportStyle: ReportStyle = SimpleReportStyle()
-        val tableReportStyle:ReportStyle = TableReportStyle()
-        val reportStyleMap:Map<String, ReportStyle> = mapOf(
+        val tableReportStyle: ReportStyle = TableReportStyle()
+        val reportStyleMap: Map<String, ReportStyle> = mapOf(
             "simple" to simpleReportStyle,
             "table" to tableReportStyle
         )
