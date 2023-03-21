@@ -36,7 +36,7 @@ class Runner(
             val svgName = "$baseName.svg"
             val dotFile = reportDir.resolve(dotName)
             val svgFile = reportDir.resolve(svgName)
-            val reportLines = report.dotLines
+            val reportLines = report.lines
             files.write(dotFile, reportLines)
             svgGenerator.generate(reportDir, dotName, svgName)
         }

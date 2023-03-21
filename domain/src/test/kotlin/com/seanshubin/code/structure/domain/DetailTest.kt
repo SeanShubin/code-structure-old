@@ -623,7 +623,7 @@ class DetailTest {
         fun reportLines(detail: Detail): List<String> {
             val report = reportFormat.report(detail, "simple") ?: return emptyList()
             val name = report.name
-            val dotLines = report.dotLines
+            val dotLines = report.lines
             return listOf(name) + dotLines
         }
 
