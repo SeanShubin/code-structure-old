@@ -558,11 +558,11 @@ class DetailTest {
         val expected = """
             dependencies
             digraph detangled {
-              "a" [URL="dependencies-a.svg" fontcolor=Blue]
-              "c" [URL="dependencies-c.svg" fontcolor=Blue]
-              "e" [URL="dependencies-e.svg" fontcolor=Blue]
-              "g" [URL="dependencies-g.svg" fontcolor=Blue]
-              "i" [URL="dependencies-i.svg" fontcolor=Blue]
+              "a" [URL="dependencies-a.svg" fontcolor=Blue label="a (1)"]
+              "c" [URL="dependencies-c.svg" fontcolor=Blue label="c (1)"]
+              "e" [URL="dependencies-e.svg" fontcolor=Blue label="e (6)"]
+              "g" [URL="dependencies-g.svg" fontcolor=Blue label="g (1)"]
+              "i" [URL="dependencies-i.svg" fontcolor=Blue label="i (1)"]
               "a" -> "c"
               "g" -> "i"
               subgraph cluster_0 {
@@ -575,23 +575,23 @@ class DetailTest {
             }
             dependencies-a
             digraph detangled {
-              "b"
+              "b" [label="b (0)"]
             }
             dependencies-c
             digraph detangled {
-              "d"
+              "d" [label="d (0)"]
             }
             dependencies-e
             digraph detangled {
-              "f" [URL="dependencies-e-f.svg" fontcolor=Blue]
+              "f" [URL="dependencies-e-f.svg" fontcolor=Blue label="f (5)"]
             }
             dependencies-e-f
             digraph detangled {
-              "k"
-              "l"
-              "m"
-              "n"
-              "o"
+              "k" [label="k (0)"]
+              "l" [label="l (0)"]
+              "m" [label="m (0)"]
+              "n" [label="n (0)"]
+              "o" [label="o (0)"]
               "k" -> "l"
               "n" -> "o"
               subgraph cluster_0 {
@@ -604,14 +604,15 @@ class DetailTest {
             }
             dependencies-g
             digraph detangled {
-              "h"
+              "h" [label="h (0)"]
             }
             dependencies-i
             digraph detangled {
-              "j"
+              "j" [label="j (0)"]
             }
         """.trimIndent()
-        val reportFormat: ReportFormat = DotReportFormat()
+        val reportStyle: ReportStyle = SimpleReportStyle()
+        val reportFormat: ReportFormat = DotReportFormat(reportStyle)
 
         fun reportLines(detail: Detail): List<String> {
             val report = reportFormat.report(detail) ?: return emptyList()

@@ -1,6 +1,6 @@
 package com.seanshubin.code.structure.domain
 
-class DotReportFormat : ReportFormat {
+class DotReportFormat(private val reportStyle: ReportStyle) : ReportFormat {
     override fun report(detail: Detail): Report? {
         if (detail.children.isEmpty()) return null
         val header = listOf("digraph detangled {")
@@ -27,11 +27,12 @@ class DotReportFormat : ReportFormat {
 
     private fun reportSingle(detail: Detail): String {
         val urlAttribute = makeUrlAttribute(detail)
-        val labelAttribute = makeLabelAttribute(detail)
-        val shapeAttribute = makeShapeAttribute(detail)
-        val name = composeQuotedNodeName(detail.name)
+        val unquotedName = composeNodeName(detail.name)
+        val labelAttribute = reportStyle.makeLabelAttribute(unquotedName, detail)
+        val shapeAttribute = reportStyle.makeShapeAttribute(detail)
+        val quotedName = composeQuotedNodeName(detail.name)
         val attributes = urlAttribute + labelAttribute + shapeAttribute
-        return composeNameAndAttributes(name, attributes)
+        return composeNameAndAttributes(quotedName, attributes)
     }
 
     private fun makeUrlAttribute(detail: Detail): List<Pair<String, String>> {
@@ -47,14 +48,6 @@ class DotReportFormat : ReportFormat {
         val reportNameParts = listOf("dependencies") + detail.name.parts
         val reportBaseName = reportNameParts.joinToString("-")
         return reportBaseName
-    }
-
-    private fun makeLabelAttribute(detail: Detail): List<Pair<String, String>> {
-        return emptyList()
-    }
-
-    private fun makeShapeAttribute(detail: Detail): List<Pair<String, String>> {
-        return emptyList()
     }
 
     private fun composeNodeName(name: Name): String = name.parts.last()

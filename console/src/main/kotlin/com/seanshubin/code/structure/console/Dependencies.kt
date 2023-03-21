@@ -20,7 +20,8 @@ class Dependencies(val args: Array<String>) {
         notifications::error,
         exit
     )
-    val reportFormat: ReportFormat = DotReportFormat()
+    val reportStyle: ReportStyle = SimpleReportStyle()
+    val reportFormat: ReportFormat = DotReportFormat(reportStyle)
     val runner: Runnable = Runner(
         args,
         files,

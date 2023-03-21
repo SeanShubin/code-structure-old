@@ -63,12 +63,12 @@ interface Detail {
     fun aggregateDependedOnByCount(): Int =
         aggregateDependencyCount { it.dependedOnBy }
 
-    fun aggregateDepth():Int {
+    fun aggregateDepth(): Int {
         val allChildren = thisAndFlattenedChildren()
         return allChildren.maxOfOrNull { it.depth } ?: 0
     }
 
-    fun aggregateTransitive():Int {
+    fun aggregateTransitive(): Int {
         val allChildren = thisAndFlattenedChildren()
         return allChildren.maxOfOrNull { it.transitive } ?: 0
     }
