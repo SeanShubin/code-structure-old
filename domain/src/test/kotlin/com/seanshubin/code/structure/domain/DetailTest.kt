@@ -408,6 +408,42 @@ class DetailTest {
     }
 
     @Test
+    fun aggregateTransitive() {
+        // given
+        val detail = DetailBuilder.fromLines(sample)
+        val expected = """
+            <root> 7
+            a 7
+            a.b 7
+            c 6
+            c.d 6
+            e 7
+            e.f 7
+            e.f.k 7
+            e.f.l 6
+            e.f.m 6
+            e.f.n 6
+            e.f.o 0
+            g 6
+            g.h 6
+            i 0
+            i.j 0
+        """.trimIndent()
+
+        fun aggregateTransitiveLine(detail: Detail): String {
+            val name = detail.name.toLine()
+            val aggregateTransitive = detail.aggregateTransitive()
+            return "$name $aggregateTransitive"
+        }
+
+        // when
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { aggregateTransitiveLine(it) }
+
+        // then
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun transitiveList() {
         // given
         val detail = DetailBuilder.fromLines(sample)
