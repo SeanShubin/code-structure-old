@@ -10,7 +10,7 @@ object DetailBuilder {
 
     private fun fromNamesAndRelations(originNames: List<Name>, originRelations: List<Relation>): Detail {
         val rootName = Name(emptyList())
-        val relationNames =originRelations.flatMap { it.toList()}
+        val relationNames = originRelations.flatMap { it.toList() }
         val leafNames = listOf(rootName) + originNames + relationNames
         val allNames = leafNames.flatMap { it.toHierarchy() }.sorted().distinct()
         val relations = originRelations.filter { it.first != it.second }.sorted().distinct()
@@ -44,19 +44,19 @@ object DetailBuilder {
             return result
         }
 
-        fun computeCycleExcludingThis(name:Name):List<Name> {
+        fun computeCycleExcludingThis(name: Name): List<Name> {
             val cycle = cycleByName[name] ?: emptyList()
-            return cycle.filterNot { it == name}
+            return cycle.filterNot { it == name }
         }
 
-        fun computeCycleIncludingThis(name:Name):List<Name> =
+        fun computeCycleIncludingThis(name: Name): List<Name> =
             cycleByName[name] ?: emptyList()
 
         fun computeThisOrCycleDependsOn(name: Name): List<Name> {
             val thisOrCycle = cycleByName[name] ?: listOf(name)
             val dependenciesOutsideOfCycle = thisOrCycle.flatMap { current ->
                 val node = nodeByName.getValue(current)
-                node.dependsOn.filterNot{thisOrCycle.contains(it) }
+                node.dependsOn.filterNot { thisOrCycle.contains(it) }
             }.sorted().distinct()
             return dependenciesOutsideOfCycle
         }
@@ -65,9 +65,9 @@ object DetailBuilder {
             val thisOrCycle = cycleByName[name] ?: listOf(name)
             val dependenciesOutsideOfCycle = thisOrCycle.flatMap { current ->
                 val node = nodeByName.getValue(current)
-                node.dependsOn.filterNot{thisOrCycle.contains(it) }
+                node.dependsOn.filterNot { thisOrCycle.contains(it) }
             }.distinct()
-            val cycleDependencies = thisOrCycle.filterNot{ it == name}
+            val cycleDependencies = thisOrCycle.filterNot { it == name }
             val outsideTransitiveDependencies = dependenciesOutsideOfCycle.flatMap {
                 computeTransitiveList(it)
             }
@@ -78,7 +78,7 @@ object DetailBuilder {
             val thisOrCycle = cycleByName[name] ?: listOf(name)
             val dependenciesOutsideOfCycle = thisOrCycle.flatMap { current ->
                 val node = nodeByName.getValue(current)
-                node.dependsOn.filterNot{thisOrCycle.contains(it) }
+                node.dependsOn.filterNot { thisOrCycle.contains(it) }
             }.sorted().distinct()
             val max = dependenciesOutsideOfCycle.maxOfOrNull(::computeDepth) ?: -1
             return max + thisOrCycle.size

@@ -22,10 +22,10 @@ data class Name(val parts: List<String>) : Comparable<Name> {
         if (parts.size < 2) listOf(this)
         else toParent().toHierarchy() + this
 
-    fun narrowToScope(scope:List<String>):Name? {
-        if(!startsWith(scope)) return null
-        if(parts.size <= scope.size) return null
-        return Name(parts.take(scope.size+1))
+    fun narrowToScope(scope: List<String>): Name? {
+        if (!startsWith(scope)) return null
+        if (parts.size <= scope.size) return null
+        return Name(parts.take(scope.size + 1))
     }
 
     private fun toParent(): Name = copy(parts = parts.dropLast(1))

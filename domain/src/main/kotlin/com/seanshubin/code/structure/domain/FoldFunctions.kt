@@ -1,7 +1,7 @@
 package com.seanshubin.code.structure.domain
 
 object FoldFunctions {
-    fun <KeyType, ValueType> List<Pair<KeyType, ValueType>>.collapseToMapOfList():Map<KeyType, List<ValueType>> =
+    fun <KeyType, ValueType> List<Pair<KeyType, ValueType>>.collapseToMapOfList(): Map<KeyType, List<ValueType>> =
         fold(emptyMap(), ::collapseToMapOfList)
 
     fun <KeyType, ValueType> collapseToMapOfList(

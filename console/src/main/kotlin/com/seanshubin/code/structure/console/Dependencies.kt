@@ -16,11 +16,11 @@ class Dependencies(val args: Array<String>) {
     val processRunner: ProcessRunner = SystemProcessRunner()
     val svgGenerator: SvgGenerator = SvgGeneratorImpl(processRunner)
     val notifications: Notifications = LineEmittingNotifications(emitLine)
-    val errorHandler:ErrorHandler = ErrorHandlerImpl(
+    val errorHandler: ErrorHandler = ErrorHandlerImpl(
         notifications::error,
         exit
     )
-    val reportFormat:ReportFormat = DotReportFormat()
+    val reportFormat: ReportFormat = DotReportFormat()
     val runner: Runnable = Runner(
         args,
         files,

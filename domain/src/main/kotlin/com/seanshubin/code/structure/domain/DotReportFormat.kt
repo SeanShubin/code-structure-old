@@ -25,7 +25,7 @@ class DotReportFormat : ReportFormat {
     private fun reportSingles(list: List<Detail>): List<String> =
         list.map(::reportSingle)
 
-    private fun reportSingle(detail:Detail):String {
+    private fun reportSingle(detail: Detail): String {
         val urlAttribute = makeUrlAttribute(detail)
         val labelAttribute = makeLabelAttribute(detail)
         val shapeAttribute = makeShapeAttribute(detail)
@@ -34,8 +34,8 @@ class DotReportFormat : ReportFormat {
         return composeNameAndAttributes(name, attributes)
     }
 
-    private fun makeUrlAttribute(detail:Detail):List<Pair<String, String>> {
-        if(detail.children.isEmpty()) return emptyList()
+    private fun makeUrlAttribute(detail: Detail): List<Pair<String, String>> {
+        if (detail.children.isEmpty()) return emptyList()
         val reportBaseName = reportBaseName(detail)
         val urlAttribute = "URL" to "$reportBaseName.svg".doubleQuote()
         val colorAttribute = "fontcolor" to "Blue"
@@ -43,26 +43,26 @@ class DotReportFormat : ReportFormat {
         return attributes
     }
 
-    private fun reportBaseName(detail:Detail):String {
+    private fun reportBaseName(detail: Detail): String {
         val reportNameParts = listOf("dependencies") + detail.name.parts
         val reportBaseName = reportNameParts.joinToString("-")
         return reportBaseName
     }
 
-    private fun makeLabelAttribute(detail:Detail):List<Pair<String, String>> {
+    private fun makeLabelAttribute(detail: Detail): List<Pair<String, String>> {
         return emptyList()
     }
 
-    private fun makeShapeAttribute(detail:Detail):List<Pair<String, String>> {
+    private fun makeShapeAttribute(detail: Detail): List<Pair<String, String>> {
         return emptyList()
     }
 
-    private fun composeNodeName(name:Name):String = name.parts.last()
+    private fun composeNodeName(name: Name): String = name.parts.last()
 
-    private fun composeQuotedNodeName(name:Name):String = composeNodeName(name).doubleQuote()
+    private fun composeQuotedNodeName(name: Name): String = composeNodeName(name).doubleQuote()
 
-    private fun composeNameAndAttributes(name:String, attributes:List<Pair<String, String>>):String {
-        if(attributes.isEmpty()) return name
+    private fun composeNameAndAttributes(name: String, attributes: List<Pair<String, String>>): String {
+        if (attributes.isEmpty()) return name
         val attributesString = attributes.map { (first, second) ->
             "$first=$second"
         }.joinToString(" ", "[", "]")
@@ -73,7 +73,7 @@ class DotReportFormat : ReportFormat {
     private fun reportRelations(relations: List<Relation>): List<String> =
         relations.map(::composeRelationLine)
 
-    private fun composeRelationLine(relation:Relation):String {
+    private fun composeRelationLine(relation: Relation): String {
         val first = composeQuotedNodeName(relation.first)
         val second = composeQuotedNodeName(relation.second)
         return "$first -> $second"
@@ -84,7 +84,7 @@ class DotReportFormat : ReportFormat {
             reportCycleCluster(index, cycle, relations)
         }
 
-    private fun reportCycleCluster(index:Int, cycle:List<Name>, relations:List<Relation>):List<String> {
+    private fun reportCycleCluster(index: Int, cycle: List<Name>, relations: List<Relation>): List<String> {
         val header = listOf(
             "subgraph cluster_$index {",
             "  penwidth=2",
@@ -104,7 +104,7 @@ class DotReportFormat : ReportFormat {
         return reportName
     }
 
-    private fun String.doubleQuote():String = "\"$this\""
-    private fun String.indent(prefix:String):String = "$prefix$this"
-    private fun List<String>.indent(prefix:String):List<String> = map{it.indent(prefix)}
+    private fun String.doubleQuote(): String = "\"$this\""
+    private fun String.indent(prefix: String): String = "$prefix$this"
+    private fun List<String>.indent(prefix: String): List<String> = map { it.indent(prefix) }
 }

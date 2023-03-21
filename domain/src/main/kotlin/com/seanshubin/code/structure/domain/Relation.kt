@@ -17,10 +17,10 @@ data class Relation(val first: Name, val second: Name) : Comparable<Relation> {
         second.flatten()
     )
 
-    fun narrowToScope(scope:List<String>):Relation? {
+    fun narrowToScope(scope: List<String>): Relation? {
         val narrowedFirst = first.narrowToScope(scope) ?: return null
         val narrowedSecond = second.narrowToScope(scope) ?: return null
-        if(narrowedFirst == narrowedSecond) return null
+        if (narrowedFirst == narrowedSecond) return null
         return Relation(narrowedFirst, narrowedSecond)
     }
 
