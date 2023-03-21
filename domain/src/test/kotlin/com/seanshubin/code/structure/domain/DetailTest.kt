@@ -3,7 +3,7 @@ package com.seanshubin.code.structure.domain
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class DetailValueTest {
+class DetailTest {
     val sample = """
             a.b -> c.d
             g.h -> c.d
