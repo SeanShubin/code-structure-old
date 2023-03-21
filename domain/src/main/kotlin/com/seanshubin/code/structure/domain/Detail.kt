@@ -70,4 +70,18 @@ interface Detail {
         val allRelations = allChildren.fold(empty, ::accumulateRelation)
         return allRelations.size
     }
+    fun aggregateDependedOnByCount(): Int {
+        val allChildren = thisAndFlattenedChildren()
+        fun accumulateRelation(soFar: Set<Relation>, a: Detail): Set<Relation> {
+            val relations = a.dependedOnBy.map{Relation(a.name, it.name)}
+            val outsideRelations = relations.filterNot { relation ->
+                relation.second.startsWith(name)
+            }
+            return soFar + outsideRelations
+        }
+
+        val empty = setOf<Relation>()
+        val allRelations = allChildren.fold(empty, ::accumulateRelation)
+        return allRelations.size
+    }
 }

@@ -336,6 +336,42 @@ class DetailTest {
     }
 
     @Test
+    fun aggregateDependedOnByCount() {
+        // given
+        val detail = DetailBuilder.fromLines(sample)
+        val expected = """
+            <root> 0
+            a 0
+            a.b 0
+            c 2
+            c.d 2
+            e 1
+            e.f 1
+            e.f.k 0
+            e.f.l 3
+            e.f.m 1
+            e.f.n 1
+            e.f.o 1
+            g 1
+            g.h 1
+            i 1
+            i.j 1
+        """.trimIndent()
+
+        fun aggregateDependedOnByLine(detail: Detail): String {
+            val name = detail.name.toLine()
+            val aggregateDependedOnByCount = detail.aggregateDependedOnByCount()
+            return "$name $aggregateDependedOnByCount"
+        }
+
+        // when
+        val actual = detail.thisAndFlattenedChildren().joinToString("\n") { aggregateDependedOnByLine(it) }
+
+        // then
+        assertEquals(expected, actual)
+    }
+
+    @Test
     fun transitiveList() {
         // given
         val detail = DetailBuilder.fromLines(sample)
