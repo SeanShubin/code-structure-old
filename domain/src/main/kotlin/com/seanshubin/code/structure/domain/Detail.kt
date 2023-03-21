@@ -56,24 +56,17 @@ interface Detail {
     }
 
     fun aggregateChildCount(): Int = flattenChildren().size
-    fun aggregateDependsOnCount(): Int {
-        val allChildren = thisAndFlattenedChildren()
-        fun accumulateRelation(soFar: Set<Relation>, a: Detail): Set<Relation> {
-            val relations = a.dependsOn.map{Relation(a.name, it.name)}
-            val outsideRelations = relations.filterNot { relation ->
-                relation.second.startsWith(name)
-            }
-            return soFar + outsideRelations
-        }
 
-        val empty = setOf<Relation>()
-        val allRelations = allChildren.fold(empty, ::accumulateRelation)
-        return allRelations.size
-    }
-    fun aggregateDependedOnByCount(): Int {
+    fun aggregateDependsOnCount(): Int =
+        aggregateDependencyCount { it.dependsOn }
+
+    fun aggregateDependedOnByCount(): Int =
+        aggregateDependencyCount { it.dependedOnBy }
+
+    private fun aggregateDependencyCount(f: (Detail) -> List<Detail>): Int {
         val allChildren = thisAndFlattenedChildren()
         fun accumulateRelation(soFar: Set<Relation>, a: Detail): Set<Relation> {
-            val relations = a.dependedOnBy.map{Relation(a.name, it.name)}
+            val relations = f(a).map { Relation(a.name, it.name) }
             val outsideRelations = relations.filterNot { relation ->
                 relation.second.startsWith(name)
             }
