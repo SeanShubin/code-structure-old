@@ -40,11 +40,7 @@ class ReportGeneratorImpl(
             }
             files.newOutputStream(destinationPath).use {
                 outputStream ->
-                var x = inputStream.read()
-                while(x != -1){
-                    outputStream.write(x)
-                    x = inputStream.read()
-                }
+                inputStream.sendTo(outputStream)
             }
         }
     }

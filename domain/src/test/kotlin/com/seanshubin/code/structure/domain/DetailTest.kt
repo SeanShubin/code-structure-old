@@ -1,6 +1,6 @@
 package com.seanshubin.code.structure.domain
 
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class DetailTest {
