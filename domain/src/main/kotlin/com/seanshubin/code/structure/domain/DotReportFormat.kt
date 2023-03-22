@@ -11,9 +11,6 @@ class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : Re
         return Report(name, lines)
     }
 
-    override fun generateReports(detail: Detail, style: String): List<Report> =
-        detail.thisAndFlattenedChildren().mapNotNull { report(it, style) }
-
     private fun reportBody(detail: Detail, style: String): List<String> {
         val singlesLines = reportSingles(detail.children, style)
         val relations = detail.relations()

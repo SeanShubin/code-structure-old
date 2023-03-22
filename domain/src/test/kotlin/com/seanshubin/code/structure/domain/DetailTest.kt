@@ -575,11 +575,11 @@ class DetailTest {
             }
             dependencies-a
             digraph detangled {
-              "b" [label="b (0)"]
+              "b" [label="b"]
             }
             dependencies-c
             digraph detangled {
-              "d" [label="d (0)"]
+              "d" [label="d"]
             }
             dependencies-e
             digraph detangled {
@@ -587,11 +587,11 @@ class DetailTest {
             }
             dependencies-e-f
             digraph detangled {
-              "k" [label="k (0)"]
-              "l" [label="l (0)"]
-              "m" [label="m (0)"]
-              "n" [label="n (0)"]
-              "o" [label="o (0)"]
+              "k" [label="k"]
+              "l" [label="l"]
+              "m" [label="m"]
+              "n" [label="n"]
+              "o" [label="o"]
               "k" -> "l"
               "n" -> "o"
               subgraph cluster_0 {
@@ -604,11 +604,11 @@ class DetailTest {
             }
             dependencies-g
             digraph detangled {
-              "h" [label="h (0)"]
+              "h" [label="h"]
             }
             dependencies-i
             digraph detangled {
-              "j" [label="j (0)"]
+              "j" [label="j"]
             }
         """.trimIndent()
 
