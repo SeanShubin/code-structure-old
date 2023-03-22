@@ -14,6 +14,8 @@ class DetailLookup(val detailMap: Map<Name, DetailValue>, val value: DetailValue
         get() = value.cycleIncludingThis.map(toImpl)
     override val thisOrCycleDependsOn: List<Detail>
         get() = value.thisOrCycleDependsOn.map(toImpl)
+    override val thisOrCycleDependedOnBy: List<Detail>
+        get() = value.thisOrCycleDependedOnBy.map(toImpl)
     override val depth: Int
         get() = value.depth
     override val transitive: Int

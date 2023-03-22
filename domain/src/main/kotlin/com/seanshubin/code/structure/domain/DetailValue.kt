@@ -8,6 +8,7 @@ data class DetailValue(
     val cycleExcludingThis: List<Name>,
     val cycleIncludingThis: List<Name>,
     val thisOrCycleDependsOn: List<Name>,
+    val thisOrCycleDependedOnBy: List<Name>,
     val depth: Int,
     val transitive: Int,
     val transitiveList: List<Name>

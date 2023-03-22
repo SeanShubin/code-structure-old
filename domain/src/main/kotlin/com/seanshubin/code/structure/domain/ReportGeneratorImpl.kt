@@ -4,29 +4,35 @@ import com.seanshubin.code.structure.contract.FilesContract
 import java.nio.file.Path
 
 class ReportGeneratorImpl(
-    private val reportFormat: ReportFormat,
+    private val reportFormats: List<ReportFormat>,
     private val files: FilesContract,
     private val svgGenerator: SvgGenerator,
 ) : ReportGenerator {
     override fun generateReports(detail: Detail, reportDir: Path, style: String) {
         val allDetails = detail.thisAndFlattenedChildren()
-        val reports = allDetails.mapNotNull {
-            reportFormat.report(detail, style)
+        val reports = allDetails.flatMap { currentDetail ->
+            reportFormats.mapNotNull{ reportFormat ->
+                reportFormat.report(currentDetail, style)
+            }
         }
         files.createDirectories(reportDir)
         writeResource(reportDir, "dependencies.css")
         writeResource(reportDir, "reset.css")
-        fun writeReport(report: Report) {
-            val baseName = report.name
-            val dotName = "$baseName.txt"
+        val writeReport = writeReportFunction(reportDir)
+        reports.forEach(writeReport)
+    }
+
+    private fun writeReportFunction(reportDir:Path):(Report)->Unit = { report ->
+        val baseName = report.baseName
+        val extension = report.extension
+        val name = "$baseName.$extension"
+        val path = reportDir.resolve(name)
+        val lines = report.lines
+        files.write(path, lines)
+        if(report.isGraphSource){
             val svgName = "$baseName.svg"
-            val dotFile = reportDir.resolve(dotName)
-            val svgFile = reportDir.resolve(svgName)
-            val reportLines = report.lines
-            files.write(dotFile, reportLines)
-            svgGenerator.generate(reportDir, dotName, svgName)
+            svgGenerator.generate(reportDir, name, svgName)
         }
-        reports.forEach(::writeReport)
     }
 
     private fun writeResource(dir:Path, name:String){

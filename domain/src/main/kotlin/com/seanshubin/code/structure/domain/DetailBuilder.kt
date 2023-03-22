@@ -61,6 +61,15 @@ object DetailBuilder {
             return dependenciesOutsideOfCycle
         }
 
+        fun computeThisOrCycleDependedOnBy(name: Name): List<Name> {
+            val thisOrCycle = cycleByName[name] ?: listOf(name)
+            val dependenciesOutsideOfCycle = thisOrCycle.flatMap { current ->
+                val node = reversedNodeByName.getValue(current)
+                node.dependsOn.filterNot { thisOrCycle.contains(it) }
+            }.sorted().distinct()
+            return dependenciesOutsideOfCycle
+        }
+
         fun computeTransitiveList(name: Name): List<Name> {
             val thisOrCycle = cycleByName[name] ?: listOf(name)
             val dependenciesOutsideOfCycle = thisOrCycle.flatMap { current ->
@@ -94,6 +103,7 @@ object DetailBuilder {
             val cycleExcludingThis: List<Name> = computeCycleExcludingThis(name)
             val cycleIncludingThis: List<Name> = computeCycleIncludingThis(name)
             val thisOrCycleDependsOn: List<Name> = computeThisOrCycleDependsOn(name)
+            val thisOrCycleDependedOnBy: List<Name> = computeThisOrCycleDependedOnBy(name)
             val depth: Int = computeDepth(name)
             val transitive: Int = computeTransitive(name)
             val transitiveList: List<Name> = computeTransitiveList(name)
@@ -105,6 +115,7 @@ object DetailBuilder {
                 cycleExcludingThis,
                 cycleIncludingThis,
                 thisOrCycleDependsOn,
+                thisOrCycleDependedOnBy,
                 depth,
                 transitive,
                 transitiveList

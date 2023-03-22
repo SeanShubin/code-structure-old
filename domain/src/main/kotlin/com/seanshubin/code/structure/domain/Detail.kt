@@ -12,6 +12,7 @@ interface Detail {
     val cycleExcludingThis: List<Detail>
     val cycleIncludingThis: List<Detail>
     val thisOrCycleDependsOn: List<Detail>
+    val thisOrCycleDependedOnBy: List<Detail>
     val depth: Int
     val transitive: Int
     val transitiveList: List<Detail>
@@ -86,5 +87,12 @@ interface Detail {
         val empty = setOf<Relation>()
         val allRelations = allChildren.fold(empty, ::accumulateRelation)
         return allRelations.size
+    }
+
+    companion object {
+        val depthAscending = Comparator<Detail> { o1, o2 -> o1.depth.compareTo(o2.depth) }
+        val depthDescending = depthAscending.reversed()
+        val nameAscending = Comparator<Detail> { o1, o2 -> o1.name.compareTo(o2.name) }
+        val depthDescendingNameAscending = depthDescending.thenComparing(nameAscending)
     }
 }

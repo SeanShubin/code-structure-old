@@ -622,9 +622,9 @@ class DetailTest {
 
         fun reportLines(detail: Detail): List<String> {
             val report = reportFormat.report(detail, "simple") ?: return emptyList()
-            val name = report.name
+            val baseName = report.baseName
             val dotLines = report.lines
-            return listOf(name) + dotLines
+            return listOf(baseName) + dotLines
         }
 
         // when

@@ -26,8 +26,13 @@ class Dependencies(val args: Array<String>) {
         "simple" to simpleReportStyle,
         "table" to tableReportStyle
     )
-    private val reportFormat: ReportFormat = DotReportFormat(reportStyleMap)
-    private val reportGenerator: ReportGenerator = ReportGeneratorImpl(reportFormat, files, svgGenerator)
+    private val dotReportFormat: ReportFormat = DotReportFormat(reportStyleMap)
+    private val htmlReportFormat: ReportFormat = HtmlReportFormat()
+    private val reportFormats: List<ReportFormat> = listOf(dotReportFormat, htmlReportFormat)
+    private val reportGenerator: ReportGenerator = ReportGeneratorImpl(
+        reportFormats,
+        files,
+        svgGenerator)
     val runner: Runnable = Runner(
         args,
         files,

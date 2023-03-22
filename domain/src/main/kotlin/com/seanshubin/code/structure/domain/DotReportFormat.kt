@@ -8,7 +8,7 @@ class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : Re
         val footer = listOf("}")
         val lines = header + body + footer
         val name = reportName(detail)
-        return Report(name, lines)
+        return Report(name,".txt", lines, isGraphSource = true)
     }
 
     private fun reportBody(detail: Detail, style: String): List<String> {
