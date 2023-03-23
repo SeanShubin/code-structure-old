@@ -25,11 +25,24 @@ interface Detail {
         }.sortedBy { it.name }.distinctBy { it.name }
 
     fun relations(): RelationsByType {
-        val relations = flattenChildren().flatMap { a ->
+        val allChildren = flattenChildren()
+        val relations = allChildren.flatMap { a ->
             a.dependsOn.map { b ->
                 Relation(a.name, b.name)
             }
         }.mapNotNull { it.narrowToScope(name.parts) }.sorted().distinct()
+        val relationsWithReasons = relations.map{ relation ->
+            val reasons = allChildren.flatMap { a ->
+                a.dependsOn.mapNotNull { b ->
+                    if(a.startsWith(relation.first) && b.startsWith(relation.second)){
+                        Relation(a.name,b.name)
+                    } else {
+                        null
+                    }
+                }
+            }
+            RelationWithReasons(relation, reasons)
+        }
         val edges = relations.map { it.toPair() }.toSet()
         val cycles: List<List<Name>> = CycleUtil.findCycles(edges).map {
             it.toList().sorted()
@@ -53,7 +66,7 @@ interface Detail {
         val relationsInCycle: List<Pair<List<Name>, List<Relation>>> = relationsByCycle.filterNot { (first, _) ->
             first == notACycle
         }.toList().sortedWith(pairCycleListOfRelationComparator)
-        return RelationsByType(relationsNotInCycle, relationsInCycle)
+        return RelationsByType(relationsWithReasons, relationsNotInCycle, relationsInCycle)
     }
 
     fun aggregateChildCount(): Int = flattenChildren().size
@@ -88,6 +101,8 @@ interface Detail {
         val allRelations = allChildren.fold(empty, ::accumulateRelation)
         return allRelations.size
     }
+
+    fun startsWith(other: Name): Boolean = name.startsWith(other)
 
     companion object {
         val depthAscending = Comparator<Detail> { o1, o2 -> o1.depth.compareTo(o2.depth) }

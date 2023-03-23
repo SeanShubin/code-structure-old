@@ -1,24 +1,19 @@
 package com.seanshubin.code.structure.domain
 
 import com.seanshubin.code.structure.domain.Detail.Companion.depthDescendingNameAscending
+import com.seanshubin.code.structure.domain.NameComposer.htmlAnchor
+import com.seanshubin.code.structure.domain.NameComposer.htmlBaseName
+import com.seanshubin.code.structure.domain.NameComposer.htmlDisplay
 
 class HtmlReportFormat : ReportFormat {
     override fun report(detail: Detail, style: String): Report? {
-        val baseName = baseName(detail)
+        val baseName = detail.htmlBaseName()
         val lines = header(detail) + body(detail) + footer()
         return Report(baseName, "html", lines, isGraphSource = false)
     }
 
-    private fun moduleName(parts:List<String>):String =
-        if(parts.isEmpty()) "--root--"
-        else parts.joinToString(".")
-    private fun moduleName(detail:Detail):String = moduleName(detail.name.parts)
-
-    private fun baseName(parts:List<String>):String = (listOf("dependencies") + parts).joinToString("-")
-    private fun baseName(detail:Detail):String = baseName(detail.name.parts)
-
-    private fun header(detail:Detail): List<String> {
-        val title = moduleName(detail)
+    private fun header(detail: Detail): List<String> {
+        val title = detail.htmlDisplay()
         return """
             <!DOCTYPE html>
             <html lang="en">
@@ -32,64 +27,82 @@ class HtmlReportFormat : ReportFormat {
             <h1>$title</h1>
         """.trimIndent().split("\n")
     }
-
-    private fun body(detail:Detail): List<String> =
+    private fun body(detail: Detail): List<String> =
         parentLink(detail) +
+                graph(detail) +
                 children(detail) +
                 dependsOn(detail) +
                 cycleDependsOn(detail) +
                 cycle(detail) +
                 cycleDependedOnBy(detail) +
                 dependedOnBy(detail) +
-                graph(detail)
+                reasons(detail)
 
-    private fun parentLink(detail:Detail):List<String> {
-        if(detail.name.parts.isEmpty()) return emptyList()
+
+    private fun parentLink(detail: Detail): List<String> {
+        if (detail.name.parts.isEmpty()) return emptyList()
         val parentNameParts = detail.name.parts.dropLast(1)
-        val parentName = moduleName(parentNameParts)
-        val parentLink = baseName(parentNameParts)
-        val parentAnchor = """<a href="$parentLink.html">$parentName</a>"""
+        val parentAnchor = parentNameParts.htmlAnchor()
         return listOf("""<h2>$parentAnchor</h2>""")
     }
 
     private fun graph(detail: Detail): List<String> {
         if (detail.children.isEmpty()) return emptyList()
-        val baseName = baseName(detail)
+        val baseName = detail.htmlBaseName()
         return """
             <object type="image/svg+xml" data="$baseName.svg">
             </object>
         """.trimMargin().split("\n")
     }
 
+    private fun reasons(detail: Detail): List<String> {
+        val relations = detail.relations().all
+        val lines = relations.flatMap(::reasonsForRelations)
+        val caption = "relations (${relations.size})"
+        return wrapInFieldset(caption, lines)
+    }
+
+    private fun reasonsForRelations(relationWithReasons: RelationWithReasons): List<String> {
+        val caption = relationWithReasons.relation.htmlDisplay()
+        return relationTable(caption, relationWithReasons.reasons)
+    }
+
     private fun children(detail: Detail): List<String> {
-        return table("children", detail.children)
+        return detailTable("children", detail.children)
     }
 
     private fun cycle(detail: Detail): List<String> {
-        val inCycle = if(detail.cycleExcludingThis.isEmpty()) emptyList() else detail.cycleIncludingThis
-        return table("cycle", inCycle)
+        val inCycle = if (detail.cycleExcludingThis.isEmpty()) emptyList() else detail.cycleIncludingThis
+        return detailTable("cycle", inCycle)
     }
 
     private fun cycleDependsOn(detail: Detail): List<String> {
-        val inCycle = if(detail.cycleExcludingThis.isEmpty()) emptyList() else detail.thisOrCycleDependsOn
-        return table("cycle depends on", inCycle)
+        val inCycle = if (detail.cycleExcludingThis.isEmpty()) emptyList() else detail.thisOrCycleDependsOn
+        return detailTable("cycle depends on", inCycle)
     }
 
     private fun cycleDependedOnBy(detail: Detail): List<String> {
-        val inCycle = if(detail.cycleExcludingThis.isEmpty()) emptyList() else detail.thisOrCycleDependedOnBy
-        return table("cycle depended on by", inCycle)
+        val inCycle = if (detail.cycleExcludingThis.isEmpty()) emptyList() else detail.thisOrCycleDependedOnBy
+        return detailTable("cycle depended on by", inCycle)
     }
 
     private fun dependsOn(detail: Detail): List<String> {
-        return table("depends on", detail.dependsOn)
+        return detailTable("depends on", detail.dependsOn)
     }
 
     private fun dependedOnBy(detail: Detail): List<String> {
-        return table("depended on by", detail.dependedOnBy)
+        return detailTable("depended on by", detail.dependedOnBy)
     }
 
-    private fun table(caption: String, rows: List<Detail>): List<String> {
-        if(rows.isEmpty()) return emptyList()
+    private fun wrapInFieldset(caption: String, lines: List<String>): List<String> {
+        return listOf(
+            "<fieldset>",
+            "<legend>$caption</legend>"
+        ) + lines.map { "  $it" } + listOf("</fieldset>")
+    }
+
+    private fun detailTable(caption: String, rows: List<Detail>): List<String> {
+        if (rows.isEmpty()) return emptyList()
         val header = """
             <fieldset>
                 <legend>$caption (${rows.size})</legend>
@@ -123,16 +136,36 @@ class HtmlReportFormat : ReportFormat {
             td(detail.dependsOn.size),
             td(detail.dependedOnBy.size),
             td(detail.children.size),
-            td(generateLink(detail)),
+            td(detail.htmlAnchor()),
             "</tr>"
         )
     }
 
-    private fun generateLink(detail: Detail): String {
-        val linkBaseName = baseName(detail)
-        val linkName = "$linkBaseName.html"
-        val name = moduleName(detail)
-        return """<a href="$linkName">$name</a>"""
+    private fun relationRow(relation: Relation): List<String> {
+        return listOf(
+            "<tr>",
+            td(relation.first.htmlAnchor()),
+            td("->"),
+            td(relation.second.htmlAnchor()),
+            "</tr>"
+        )
+    }
+
+    private fun relationTable(caption: String, rows: List<Relation>): List<String> {
+        if (rows.isEmpty()) return emptyList()
+        val header = """
+            <fieldset>
+                <legend>$caption (${rows.size})</legend>
+                <table>
+                    <tbody>
+        """.trimIndent().split("\n")
+        val footer = """
+                    </tbody>
+                </table>
+            </fieldset>
+        """.trimIndent().split("\n")
+        val rowLines = rows.sorted().flatMap(::relationRow)
+        return header + rowLines + footer
     }
 
     private fun td(x: Int): String = "<td>$x</td>"
