@@ -49,7 +49,7 @@ pre {
 }
 
 fieldset {
-    border: 1px solid var(--inactive2);
+    border: 1px solid var(--inactive1);
     padding: 0.5rem;
 }
 
