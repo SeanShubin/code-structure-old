@@ -35,12 +35,12 @@ class HtmlReportFormat(
     private fun body(reportDir:Path, detail: Detail): List<String> =
         parentLink(detail) +
                 graph(reportDir,detail) +
-                children(detail) +
                 dependsOn(detail) +
-                cycleDependsOn(detail) +
-                cycle(detail) +
-                cycleDependedOnBy(detail) +
                 dependedOnBy(detail) +
+                cycleDependsOn(detail) +
+                cycleDependedOnBy(detail) +
+                cycle(detail) +
+                children(detail) +
                 reasons(detail)
 
 
