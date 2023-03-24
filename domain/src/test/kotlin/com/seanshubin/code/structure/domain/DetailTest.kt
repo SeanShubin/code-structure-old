@@ -1,5 +1,6 @@
 package com.seanshubin.code.structure.domain
 
+import java.nio.file.Paths
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -556,13 +557,14 @@ class DetailTest {
         // given
         val detail = DetailBuilder.fromLines(sample)
         val expected = """
-            dependencies
+            dependencies.txt
             digraph detangled {
-              "a" [URL="dependencies-a.svg" fontcolor=Blue label="a (1)"]
-              "c" [URL="dependencies-c.svg" fontcolor=Blue label="c (1)"]
-              "e" [URL="dependencies-e.svg" fontcolor=Blue label="e (6)"]
-              "g" [URL="dependencies-g.svg" fontcolor=Blue label="g (1)"]
-              "i" [URL="dependencies-i.svg" fontcolor=Blue label="i (1)"]
+              bgcolor=lightgray
+              "a" [URL="dependencies-a.html" fontcolor=Blue label="a (1)"]
+              "c" [URL="dependencies-c.html" fontcolor=Blue label="c (1)"]
+              "e" [URL="dependencies-e.html" fontcolor=Blue label="e (6)"]
+              "g" [URL="dependencies-g.html" fontcolor=Blue label="g (1)"]
+              "i" [URL="dependencies-i.html" fontcolor=Blue label="i (1)"]
               "a" -> "c"
               "g" -> "i"
               subgraph cluster_0 {
@@ -573,20 +575,24 @@ class DetailTest {
                 "g" -> "c"
               }
             }
-            dependencies-a
+            dependencies-a.txt
             digraph detangled {
+              bgcolor=lightgray
               "b" [label="b"]
             }
-            dependencies-c
+            dependencies-c.txt
             digraph detangled {
+              bgcolor=lightgray
               "d" [label="d"]
             }
-            dependencies-e
+            dependencies-e.txt
             digraph detangled {
-              "f" [URL="dependencies-e-f.svg" fontcolor=Blue label="f (5)"]
+              bgcolor=lightgray
+              "f" [URL="dependencies-e-f.html" fontcolor=Blue label="f (5)"]
             }
-            dependencies-e-f
+            dependencies-e-f.txt
             digraph detangled {
+              bgcolor=lightgray
               "k" [label="k"]
               "l" [label="l"]
               "m" [label="m"]
@@ -602,12 +608,14 @@ class DetailTest {
                 "n" -> "l"
               }
             }
-            dependencies-g
+            dependencies-g.txt
             digraph detangled {
+              bgcolor=lightgray
               "h" [label="h"]
             }
-            dependencies-i
+            dependencies-i.txt
             digraph detangled {
+              bgcolor=lightgray
               "j" [label="j"]
             }
         """.trimIndent()
@@ -621,8 +629,9 @@ class DetailTest {
         val reportFormat: ReportFormat = DotReportFormat(reportStyleMap)
 
         fun reportLines(detail: Detail): List<String> {
-            val report = reportFormat.report(detail, "simple") ?: return emptyList()
-            val baseName = report.baseName
+            val reportDir = Paths.get("should-not-exist")
+            val report = reportFormat.report(reportDir, detail, "simple") ?: return emptyList()
+            val baseName = report.name
             val dotLines = report.lines
             return listOf(baseName) + dotLines
         }

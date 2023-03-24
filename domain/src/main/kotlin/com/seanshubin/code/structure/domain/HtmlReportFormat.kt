@@ -2,14 +2,18 @@ package com.seanshubin.code.structure.domain
 
 import com.seanshubin.code.structure.domain.Detail.Companion.depthDescendingNameAscending
 import com.seanshubin.code.structure.domain.NameComposer.htmlAnchor
-import com.seanshubin.code.structure.domain.NameComposer.htmlBaseName
 import com.seanshubin.code.structure.domain.NameComposer.htmlDisplay
+import com.seanshubin.code.structure.domain.NameComposer.htmlFileName
+import com.seanshubin.code.structure.domain.NameComposer.svgFileName
+import java.nio.file.Path
 
-class HtmlReportFormat : ReportFormat {
-    override fun report(detail: Detail, style: String): Report? {
-        val baseName = detail.htmlBaseName()
-        val lines = header(detail) + body(detail) + footer()
-        return Report(baseName, "html", lines, isGraphSource = false)
+class HtmlReportFormat(
+    private val loadSvgLines:(Path, Detail)->List<String>
+) : ReportFormat {
+    override fun report(reportDir:Path, detail: Detail, style: String): Report? {
+        val fileName = detail.htmlFileName()
+        val lines = header(detail) + body(reportDir, detail) + footer()
+        return Report(fileName, lines)
     }
 
     private fun header(detail: Detail): List<String> {
@@ -27,9 +31,10 @@ class HtmlReportFormat : ReportFormat {
             <h1>$title</h1>
         """.trimIndent().split("\n")
     }
-    private fun body(detail: Detail): List<String> =
+
+    private fun body(reportDir:Path, detail: Detail): List<String> =
         parentLink(detail) +
-                graph(detail) +
+                graph(reportDir,detail) +
                 children(detail) +
                 dependsOn(detail) +
                 cycleDependsOn(detail) +
@@ -46,13 +51,10 @@ class HtmlReportFormat : ReportFormat {
         return listOf("""<h2>$parentAnchor</h2>""")
     }
 
-    private fun graph(detail: Detail): List<String> {
+    private fun graph(reportDir:Path, detail: Detail): List<String> {
         if (detail.children.isEmpty()) return emptyList()
-        val baseName = detail.htmlBaseName()
-        return """
-            <object type="image/svg+xml" data="$baseName.svg">
-            </object>
-        """.trimMargin().split("\n")
+        val svgLines = loadSvgLines(reportDir, detail)
+        return svgLines
     }
 
     private fun reasons(detail: Detail): List<String> {

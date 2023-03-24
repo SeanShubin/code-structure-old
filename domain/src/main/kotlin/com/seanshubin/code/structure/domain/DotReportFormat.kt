@@ -1,17 +1,22 @@
 package com.seanshubin.code.structure.domain
 
+import com.seanshubin.code.structure.domain.NameComposer.dotFileName
+import com.seanshubin.code.structure.domain.NameComposer.htmlFileName
+import com.seanshubin.code.structure.domain.NameComposer.svgFileName
+import java.nio.file.Path
+
 class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : ReportFormat {
-    override fun report(detail: Detail, style: String): Report? {
+    override fun report(reportDir: Path, detail: Detail, style: String): Report? {
         if (detail.children.isEmpty()) return null
         val header = listOf(
             "digraph detangled {",
-            "bgcolor=lightgray"
+            "  bgcolor=lightgray"
         )
         val body = reportBody(detail, style).indent("  ")
         val footer = listOf("}")
         val lines = header + body + footer
-        val name = reportName(detail)
-        return Report(name,".txt", lines, isGraphSource = true)
+        val name = detail.dotFileName()
+        return Report(name, lines)
     }
 
     private fun reportBody(detail: Detail, style: String): List<String> {
@@ -38,17 +43,11 @@ class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : Re
 
     private fun makeUrlAttribute(detail: Detail): List<Pair<String, String>> {
         if (detail.children.isEmpty()) return emptyList()
-        val reportBaseName = reportBaseName(detail)
-        val urlAttribute = "URL" to "$reportBaseName.svg".doubleQuote()
+        val fileName = detail.htmlFileName()
+        val urlAttribute = "URL" to fileName.doubleQuote()
         val colorAttribute = "fontcolor" to "Blue"
         val attributes = listOf(urlAttribute, colorAttribute)
         return attributes
-    }
-
-    private fun reportBaseName(detail: Detail): String {
-        val reportNameParts = listOf("dependencies") + detail.name.parts
-        val reportBaseName = reportNameParts.joinToString("-")
-        return reportBaseName
     }
 
     private fun composeNodeName(name: Name): String = name.parts.last()
@@ -90,12 +89,6 @@ class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : Re
         )
         val lines = header + body + footer
         return lines
-    }
-
-    private fun reportName(detail: Detail): String {
-        val reportNameParts = listOf("dependencies") + detail.name.parts
-        val reportName = reportNameParts.joinToString("-")
-        return reportName
     }
 
     private fun String.doubleQuote(): String = "\"$this\""

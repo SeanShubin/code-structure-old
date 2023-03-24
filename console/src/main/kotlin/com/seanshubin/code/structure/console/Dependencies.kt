@@ -5,6 +5,7 @@ import com.seanshubin.code.structure.contract.FilesDelegate
 import com.seanshubin.code.structure.domain.*
 import com.seanshubin.code.structure.process.ProcessRunner
 import com.seanshubin.code.structure.process.SystemProcessRunner
+import java.nio.file.Path
 
 class Dependencies(val args: Array<String>) {
     private val files: FilesContract = FilesDelegate
@@ -27,10 +28,11 @@ class Dependencies(val args: Array<String>) {
         "table" to tableReportStyle
     )
     private val dotReportFormat: ReportFormat = DotReportFormat(reportStyleMap)
-    private val htmlReportFormat: ReportFormat = HtmlReportFormat()
-    private val reportFormats: List<ReportFormat> = listOf(dotReportFormat, htmlReportFormat)
+    private val loadSvgLines:(Path, Detail)->List<String> = SvgLoader(files)
+    private val htmlReportFormat: ReportFormat = HtmlReportFormat(loadSvgLines)
     private val reportGenerator: ReportGenerator = ReportGeneratorImpl(
-        reportFormats,
+        htmlReportFormat,
+        dotReportFormat,
         files,
         svgGenerator)
     val runner: Runnable = Runner(

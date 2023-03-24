@@ -1,38 +1,39 @@
 package com.seanshubin.code.structure.domain
 
 import com.seanshubin.code.structure.contract.FilesContract
+import com.seanshubin.code.structure.domain.NameComposer.dotFileName
+import com.seanshubin.code.structure.domain.NameComposer.svgFileName
 import java.nio.file.Path
 
 class ReportGeneratorImpl(
-    private val reportFormats: List<ReportFormat>,
+    private val htmlReportFormat: ReportFormat,
+    private val dotReportFormat:ReportFormat,
     private val files: FilesContract,
     private val svgGenerator: SvgGenerator,
 ) : ReportGenerator {
     override fun generateReports(detail: Detail, reportDir: Path, style: String) {
         val allDetails = detail.thisAndFlattenedChildren()
-        val reports = allDetails.flatMap { currentDetail ->
-            reportFormats.mapNotNull{ reportFormat ->
-                reportFormat.report(currentDetail, style)
-            }
-        }
+        val detailsWithChildren = allDetails.filter { it.children.isNotEmpty()}
+        val dotReports = detailsWithChildren.mapNotNull{dotReportFormat.report(reportDir, it, style)}
         files.createDirectories(reportDir)
         writeResource(reportDir, "dependencies.css")
         writeResource(reportDir, "reset.css")
         val writeReport = writeReportFunction(reportDir)
-        reports.forEach(writeReport)
+        dotReports.forEach(writeReport)
+        detailsWithChildren.forEach{
+            val dotFileName = it.dotFileName()
+            val svgFileName = it.svgFileName()
+            svgGenerator.generate(reportDir, dotFileName, svgFileName)
+        }
+        val htmlReports= allDetails.mapNotNull{htmlReportFormat.report(reportDir, it, style)}
+        htmlReports.forEach(writeReport)
     }
 
     private fun writeReportFunction(reportDir:Path):(Report)->Unit = { report ->
-        val baseName = report.baseName
-        val extension = report.extension
-        val name = "$baseName.$extension"
+        val name = report.name
         val path = reportDir.resolve(name)
         val lines = report.lines
         files.write(path, lines)
-        if(report.isGraphSource){
-            val svgName = "$baseName.svg"
-            svgGenerator.generate(reportDir, name, svgName)
-        }
     }
 
     private fun writeResource(dir:Path, name:String){

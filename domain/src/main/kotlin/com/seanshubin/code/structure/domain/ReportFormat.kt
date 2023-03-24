@@ -1,5 +1,7 @@
 package com.seanshubin.code.structure.domain
 
+import java.nio.file.Path
+
 interface ReportFormat {
-    fun report(detail: Detail, style: String): Report?
+    fun report(reportDir: Path, detail: Detail, style: String): Report?
 }
