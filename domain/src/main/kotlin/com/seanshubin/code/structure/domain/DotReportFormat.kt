@@ -3,7 +3,10 @@ package com.seanshubin.code.structure.domain
 class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : ReportFormat {
     override fun report(detail: Detail, style: String): Report? {
         if (detail.children.isEmpty()) return null
-        val header = listOf("digraph detangled {")
+        val header = listOf(
+            "digraph detangled {",
+            "bgcolor=lightgray"
+        )
         val body = reportBody(detail, style).indent("  ")
         val footer = listOf("}")
         val lines = header + body + footer
