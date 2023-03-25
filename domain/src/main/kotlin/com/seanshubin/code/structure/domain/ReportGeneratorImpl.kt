@@ -10,8 +10,10 @@ class ReportGeneratorImpl(
     private val dotReportFormat:ReportFormat,
     private val files: FilesContract,
     private val svgGenerator: SvgGenerator,
+    private val reportDir:Path,
+    private val style:String
 ) : ReportGenerator {
-    override fun generateReports(detail: Detail, reportDir: Path, style: String) {
+    override fun generateReports(detail: Detail) {
         val allDetails = detail.thisAndFlattenedChildren()
         val detailsWithChildren = allDetails.filter { it.children.isNotEmpty()}
         val dotReports = detailsWithChildren.mapNotNull{dotReportFormat.report(reportDir, it, style)}

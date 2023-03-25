@@ -1,14 +1,14 @@
 package com.seanshubin.code.structure.domain
 
 import com.seanshubin.code.structure.contract.FilesContract
+import java.nio.file.Path
 import java.nio.file.Paths
 
 class Runner(
-    val args: Array<String>,
-    val files: FilesContract,
-    val reportGenerator: ReportGenerator,
-    val timeTaken: (Long) -> Unit,
-    val error: (String) -> Nothing
+    private val inputFile: Path,
+    private val files: FilesContract,
+    private val reportGenerator: ReportGenerator,
+    private val timeTaken: (Long) -> Unit
 ) : Runnable {
     override fun run() {
         val startTime = System.currentTimeMillis()
@@ -19,13 +19,8 @@ class Runner(
     }
 
     private fun runMeInsideTimer() {
-        val inputFileName = args.getOrNull(0) ?: error("first parameter must be input file")
-        val reportDirName = args.getOrNull(1) ?: error("second parameter must be report directory")
-        val reportStyleName = args.getOrNull(2) ?: error("third parameter must be a report style name")
-        val reportDir = Paths.get(reportDirName)
-        val inputFile = Paths.get(inputFileName)
         val inputLines = files.readAllLines(inputFile)
         val detail = DetailBuilder.fromLines(inputLines)
-        reportGenerator.generateReports(detail, reportDir, reportStyleName)
+        reportGenerator.generateReports(detail)
     }
 }
