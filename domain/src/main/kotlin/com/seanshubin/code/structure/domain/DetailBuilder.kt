@@ -8,7 +8,11 @@ object DetailBuilder {
         return fromNamesAndRelations(parsedNames, parsedRelations)
     }
 
-    private fun fromNamesAndRelations(originNames: List<Name>, originRelations: List<Relation>): Detail {
+    private fun fromNamesAndRelations(originNameSources: List<NameSource>, originRelations: List<Relation>): Detail {
+        val originNames = originNameSources.map { it.name }
+        val sourceByName = originNameSources.associate {
+            it.name to it.source
+        }
         val rootName = Name(emptyList())
         val relationNames = originRelations.flatMap { it.toList() }
         val leafNames = listOf(rootName) + originNames + relationNames
@@ -97,6 +101,7 @@ object DetailBuilder {
             computeTransitiveList(name).size
 
         fun computeDetail(name: Name): DetailValue {
+            val source = sourceByName[name]
             val dependsOn: List<Name> = computeDependsOn(name)
             val dependedOnBy: List<Name> = computeDependedOnBy(name)
             val children: List<Name> = computeChildren(name)
@@ -109,6 +114,7 @@ object DetailBuilder {
             val transitiveList: List<Name> = computeTransitiveList(name)
             return DetailValue(
                 name,
+                source,
                 dependsOn,
                 dependedOnBy,
                 children,

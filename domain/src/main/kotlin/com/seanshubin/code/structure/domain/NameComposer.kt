@@ -22,5 +22,10 @@ object NameComposer {
     fun Detail.dotFileName():String = name.dotFileName()
     fun Detail.svgFileName():String = name.svgFileName()
     fun Detail.htmlFileName():String = name.htmlFileName()
+    fun Detail.htmlSourceLink(prefix:String):String? = if(source == null) null else "$prefix$source"
+    fun Detail.htmlSourceAnchor(prefix:String):String? {
+        val htmlSourceLink = htmlSourceLink(prefix) ?: return null
+        return """<a href="$htmlSourceLink">$source</a>"""
+    }
     fun Relation.htmlDisplay():String = "${first.htmlDisplay()} -> ${second.htmlDisplay()}"
 }

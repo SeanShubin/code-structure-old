@@ -29,8 +29,4 @@ data class Name(val parts: List<String>) : Comparable<Name> {
     }
 
     private fun toParent(): Name = copy(parts = parts.dropLast(1))
-
-    companion object {
-        fun fromString(s: String): Name = Format.parseName(s)!!
-    }
 }

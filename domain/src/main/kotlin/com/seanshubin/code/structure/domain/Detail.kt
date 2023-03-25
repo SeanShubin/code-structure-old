@@ -6,6 +6,7 @@ import com.seanshubin.code.structure.domain.FoldFunctions.collapseToMapOfList
 
 interface Detail {
     val name: Name
+    val source:String?
     val dependsOn: List<Detail>
     val dependedOnBy: List<Detail>
     val children: List<Detail>

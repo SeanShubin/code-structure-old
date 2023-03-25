@@ -4,13 +4,14 @@ import com.seanshubin.code.structure.domain.Detail.Companion.depthDescendingName
 import com.seanshubin.code.structure.domain.NameComposer.htmlAnchor
 import com.seanshubin.code.structure.domain.NameComposer.htmlDisplay
 import com.seanshubin.code.structure.domain.NameComposer.htmlFileName
-import com.seanshubin.code.structure.domain.NameComposer.svgFileName
+import com.seanshubin.code.structure.domain.NameComposer.htmlSourceAnchor
 import java.nio.file.Path
 
 class HtmlReportFormat(
-    private val loadSvgLines:(Path, Detail)->List<String>
+    private val sourcePrefix: String,
+    private val loadSvgLines: (Path, Detail) -> List<String>
 ) : ReportFormat {
-    override fun report(reportDir:Path, detail: Detail, style: String): Report? {
+    override fun report(reportDir: Path, detail: Detail, style: String): Report? {
         val fileName = detail.htmlFileName()
         val lines = header(detail) + body(reportDir, detail) + footer()
         return Report(fileName, lines)
@@ -32,9 +33,10 @@ class HtmlReportFormat(
         """.trimIndent().split("\n")
     }
 
-    private fun body(reportDir:Path, detail: Detail): List<String> =
+    private fun body(reportDir: Path, detail: Detail): List<String> =
         parentLink(detail) +
-                graph(reportDir,detail) +
+                sourceLink(detail) +
+                graph(reportDir, detail) +
                 dependsOn(detail) +
                 dependedOnBy(detail) +
                 cycleDependsOn(detail) +
@@ -51,7 +53,15 @@ class HtmlReportFormat(
         return listOf("""<h2>$parentAnchor</h2>""")
     }
 
-    private fun graph(reportDir:Path, detail: Detail): List<String> {
+    private fun sourceLink(detail: Detail): List<String> {
+        val sourceAnchor = detail.htmlSourceAnchor(sourcePrefix)
+        return if (sourceAnchor == null)
+            emptyList()
+        else
+            listOf("""<h2>$sourceAnchor</h2>""")
+    }
+
+    private fun graph(reportDir: Path, detail: Detail): List<String> {
         if (detail.children.isEmpty()) return emptyList()
         val svgLines = loadSvgLines(reportDir, detail)
         return svgLines
@@ -116,7 +126,8 @@ class HtmlReportFormat(
                         <th>depends on</th>
                         <th>depended on by</th>
                         <th>children</th>
-                        <th>link</th>
+                        <th>report</th>
+                        <th>source</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -139,6 +150,7 @@ class HtmlReportFormat(
             td(detail.dependedOnBy.size),
             td(detail.children.size),
             td(detail.htmlAnchor()),
+            td(detail.htmlSourceAnchor(sourcePrefix) ?: ""),
             "</tr>"
         )
     }

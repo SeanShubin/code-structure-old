@@ -1,7 +1,11 @@
 package com.seanshubin.code.structure.domain
 
-class DetailLookup(val detailMap: Map<Name, DetailValue>, val value: DetailValue) : Detail {
+class DetailLookup(
+    private val detailMap: Map<Name, DetailValue>,
+    private val value: DetailValue
+) : Detail {
     override val name: Name get() = value.name
+    override val source: String? get() = value.source
     override val dependsOn: List<Detail>
         get() = value.dependsOn.map(toImpl)
     override val dependedOnBy: List<Detail>

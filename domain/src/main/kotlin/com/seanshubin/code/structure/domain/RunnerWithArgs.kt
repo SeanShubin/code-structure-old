@@ -10,10 +10,12 @@ class RunnerWithArgs(
     override fun run() {
         val inputFileName = args.getOrNull(0) ?: error("first parameter must be input file")
         val reportDirName = args.getOrNull(1) ?: error("second parameter must be report directory")
-        val reportStyleName = args.getOrNull(2) ?: error("third parameter must be a report style name")
+        val sourcePrefix = args.getOrNull(2) ?: error("third parameter must be source prefix")
+        val reportStyleName = args.getOrNull(3) ?: error("fourth parameter must be a report style name")
         val configuration = CodeStructureAppConfig(
             Paths.get(inputFileName),
             Paths.get(reportDirName),
+            sourcePrefix,
             reportStyleName
         )
         val runner = createRunnable(configuration)
