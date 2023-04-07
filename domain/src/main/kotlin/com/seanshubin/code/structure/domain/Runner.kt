@@ -1,6 +1,7 @@
 package com.seanshubin.code.structure.domain
 
 import com.seanshubin.code.structure.contract.FilesContract
+import com.seanshubin.code.structure.contract.SystemContract
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -8,12 +9,13 @@ class Runner(
     private val inputFile: Path,
     private val files: FilesContract,
     private val reportGenerator: ReportGenerator,
+    private val system: SystemContract,
     private val timeTaken: (Long) -> Unit
 ) : Runnable {
     override fun run() {
-        val startTime = System.currentTimeMillis()
+        val startTime = system.currentTimeMillis()
         runMeInsideTimer()
-        val endTime = System.currentTimeMillis()
+        val endTime = system.currentTimeMillis()
         val duration = endTime - startTime
         timeTaken(duration)
     }

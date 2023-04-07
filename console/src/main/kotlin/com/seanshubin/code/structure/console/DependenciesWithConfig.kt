@@ -2,6 +2,8 @@ package com.seanshubin.code.structure.console
 
 import com.seanshubin.code.structure.contract.FilesContract
 import com.seanshubin.code.structure.contract.FilesDelegate
+import com.seanshubin.code.structure.contract.SystemContract
+import com.seanshubin.code.structure.contract.SystemDelegate
 import com.seanshubin.code.structure.domain.*
 import com.seanshubin.code.structure.process.ProcessRunner
 import com.seanshubin.code.structure.process.SystemProcessRunner
@@ -30,10 +32,12 @@ class DependenciesWithConfig(config: CodeStructureAppConfig) {
         config.reportDir,
         config.reportStyleName
     )
+    val system:SystemContract = SystemDelegate
     val runner: Runnable = Runner(
         config.inputFile,
         files,
         reportGenerator,
+        system,
         notifications::timeTaken
     )
 }
