@@ -6,7 +6,7 @@ import com.seanshubin.code.structure.domain.FoldFunctions.collapseToMapOfList
 
 interface Detail {
     val name: Name
-    val source:String?
+    val source: String?
     val dependsOn: List<Detail>
     val dependedOnBy: List<Detail>
     val children: List<Detail>
@@ -32,11 +32,11 @@ interface Detail {
                 Relation(a.name, b.name)
             }
         }.mapNotNull { it.narrowToScope(name.parts) }.sorted().distinct()
-        val relationsWithReasons = relations.map{ relation ->
+        val relationsWithReasons = relations.map { relation ->
             val reasons = allChildren.flatMap { a ->
                 a.dependsOn.mapNotNull { b ->
-                    if(a.startsWith(relation.first) && b.startsWith(relation.second)){
-                        Relation(a.name,b.name)
+                    if (a.startsWith(relation.first) && b.startsWith(relation.second)) {
+                        Relation(a.name, b.name)
                     } else {
                         null
                     }
