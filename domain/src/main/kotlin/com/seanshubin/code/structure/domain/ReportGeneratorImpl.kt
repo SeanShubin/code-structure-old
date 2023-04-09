@@ -10,6 +10,7 @@ class ReportGeneratorImpl(
     private val dotReportFormat: ReportFormat,
     private val tableOfContentsFormat:ReportFormat,
     private val listFormat:ReportFormat,
+    private val entryPointFormat:ReportFormat,
     private val files: FilesContract,
     private val svgGenerator: SvgGenerator,
     private val reportDir: Path,
@@ -33,6 +34,7 @@ class ReportGeneratorImpl(
         htmlReports.forEach(writeReport)
         generateReport(tableOfContentsFormat, detail)
         generateReport(listFormat, detail)
+        generateReport(entryPointFormat, detail)
     }
 
     private fun generateReport(reportFormat:ReportFormat, detail:Detail){

@@ -28,6 +28,8 @@ interface Detail {
     fun allWithSource():List<Detail> =
         thisAndFlattenedChildren().filter { it.source != null }
 
+    fun entryPoints():List<Detail> = allWithSource().filter { it.dependedOnBy.isEmpty() }
+
     fun relations(): RelationsByType {
         val allChildren = flattenChildren()
         val relations = allChildren.flatMap { a ->
