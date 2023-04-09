@@ -9,7 +9,8 @@ class TableOfContentsReportFormat : ReportFormat {
         val title = "Dependency Report"
         val header = HtmlElement.h1(title)
         val graphs = HtmlElement.p(HtmlElement.a("Graph", "dependencies.html"))
-        val html = HtmlElement.html(title, header, graphs)
+        val list = HtmlElement.p(HtmlElement.a("List", "list.html"))
+        val html = GlobalHtml.standardHtml(title, header, graphs, list)
         return Report(name, html.toLines())
     }
 }

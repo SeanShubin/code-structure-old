@@ -25,6 +25,9 @@ interface Detail {
             listOf(child) + child.flattenChildren()
         }.sortedBy { it.name }.distinctBy { it.name }
 
+    fun allWithSource():List<Detail> =
+        thisAndFlattenedChildren().filter { it.source != null }
+
     fun relations(): RelationsByType {
         val allChildren = flattenChildren()
         val relations = allChildren.flatMap { a ->

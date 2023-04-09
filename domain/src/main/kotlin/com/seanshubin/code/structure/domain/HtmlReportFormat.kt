@@ -29,6 +29,7 @@ class HtmlReportFormat(
                <link rel="stylesheet" href="dependencies.css">
             </head>
             <body>
+            <a href="index.html">table of contents</a>
             <h1>$title</h1>
         """.trimIndent().split("\n")
     }

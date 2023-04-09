@@ -9,6 +9,7 @@ class ReportGeneratorImpl(
     private val htmlReportFormat: ReportFormat,
     private val dotReportFormat: ReportFormat,
     private val tableOfContentsFormat:ReportFormat,
+    private val listFormat:ReportFormat,
     private val files: FilesContract,
     private val svgGenerator: SvgGenerator,
     private val reportDir: Path,
@@ -30,8 +31,13 @@ class ReportGeneratorImpl(
         }
         val htmlReports = allDetails.mapNotNull { htmlReportFormat.report(reportDir, it, style) }
         htmlReports.forEach(writeReport)
-        val tableOfContentReport = tableOfContentsFormat.report(reportDir, detail, style)!!
-        writeReport(tableOfContentReport)
+        generateReport(tableOfContentsFormat, detail)
+        generateReport(listFormat, detail)
+    }
+
+    private fun generateReport(reportFormat:ReportFormat, detail:Detail){
+        val report = reportFormat.report(reportDir, detail, style)!!
+        writeReportFunction(reportDir)(report)
     }
 
     private fun writeReportFunction(reportDir: Path): (Report) -> Unit = { report ->

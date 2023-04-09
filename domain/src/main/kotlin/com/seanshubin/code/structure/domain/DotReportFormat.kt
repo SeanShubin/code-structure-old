@@ -2,7 +2,6 @@ package com.seanshubin.code.structure.domain
 
 import com.seanshubin.code.structure.domain.NameComposer.dotFileName
 import com.seanshubin.code.structure.domain.NameComposer.htmlFileName
-import com.seanshubin.code.structure.domain.NameComposer.svgFileName
 import java.nio.file.Path
 
 class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : ReportFormat {

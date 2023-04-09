@@ -60,7 +60,10 @@ class HtmlElementTest {
         // given
         val aElement = HtmlElement.a("the-link-name", "the-link")
         val pElement = HtmlElement.p(aElement)
-        val htmlElement = HtmlElement.html("the-title", pElement)
+        val titleElement = HtmlElement.title("the title")
+        val headElement = HtmlElement.head(titleElement)
+        val bodyElement = HtmlElement.body(pElement)
+        val htmlElement = HtmlElement.html(headElement, bodyElement)
         val expected = """
             <html>
               <head>
