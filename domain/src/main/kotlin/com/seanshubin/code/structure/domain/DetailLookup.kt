@@ -28,6 +28,15 @@ class DetailLookup(
         get() = value.transitiveList.map(toImpl)
 
     override fun toString(): String = if (name.parts.isEmpty()) "<root>" else name.parts.joinToString(".")
+    override fun equals(other: Any?): Boolean =
+        if(other is DetailLookup){
+            value == other.value
+        } else {
+            false
+        }
+
+    override fun hashCode(): Int =
+        value.hashCode()
 
     private val toImpl: (Name) -> DetailLookup = { name ->
         DetailLookup(detailMap, detailMap.getValue(name))

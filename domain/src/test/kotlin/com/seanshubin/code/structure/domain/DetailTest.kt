@@ -6,6 +6,15 @@ import kotlin.test.assertEquals
 
 class DetailTest {
     val sample = """
+            a.b bin/a/b.binary src/a/b.source
+            c.d bin/c/d.binary src/c/d.source
+            g.h bin/g/h.binary src/g/h.source
+            i.j bin/i/j.binary src/i/j.source
+            e.f.k bin/e/f/k.binary src/e/f/k.source
+            e.f.l bin/e/f/l.binary src/e/f/l.source
+            e.f.m bin/e/f/m.binary src/e/f/m.source
+            e.f.n bin/e/f/n.binary src/e/f/n.source
+            e.f.o bin/e/f/o.binary src/e/f/o.source
             a.b -> c.d
             g.h -> c.d
             g.h -> i.j
@@ -638,6 +647,21 @@ class DetailTest {
 
         // when
         val actual = detail.thisAndFlattenedChildren().flatMap { reportLines(it) }.joinToString("\n")
+
+        // then
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun cycles() {
+        // given
+        val detail = DetailBuilder.fromLines(sample)
+        val expected = """
+            [c.d e.f.l e.f.m e.f.n g.h]
+        """.trimIndent()
+
+        // when
+        val actual = detail.findAllCycles().joinToString("\n") { it.listOfDetailToLine() }
 
         // then
         assertEquals(expected, actual)

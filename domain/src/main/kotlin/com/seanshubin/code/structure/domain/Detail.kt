@@ -30,6 +30,22 @@ interface Detail {
 
     fun entryPoints():List<Detail> = allWithSource().filter { it.dependedOnBy.isEmpty() }
 
+    fun findAllCycles():List<List<Detail>> {
+        val all = allWithSource()
+        val allCycles = mutableListOf<List<Detail>>()
+        all.forEach { current ->
+            if(current.isPartOfCycle()){
+                val currentCycle = current.cycleIncludingThis
+                if(!allCycles.contains(currentCycle)){
+                    allCycles.add(currentCycle)
+                }
+            }
+        }
+        return allCycles
+    }
+
+    fun isPartOfCycle():Boolean = cycleExcludingThis.isNotEmpty()
+
     fun relations(): RelationsByType {
         val allChildren = flattenChildren()
         val relations = allChildren.flatMap { a ->
