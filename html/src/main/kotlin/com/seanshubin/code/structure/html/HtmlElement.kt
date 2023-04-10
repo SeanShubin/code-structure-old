@@ -38,6 +38,8 @@ interface HtmlElement {
         fun p(element: HtmlElement): HtmlElement = element("p", element)
         fun head(vararg elements: HtmlElement): HtmlElement = element("head", *elements)
         fun body(vararg elements: HtmlElement): HtmlElement = element("body", *elements)
+        fun div(elements: List<HtmlElement>): HtmlElement = element("div", elements)
+        fun div(vararg elements: HtmlElement): HtmlElement = div(*elements)
         fun title(content: String): HtmlElement = element("title", content)
         fun a(content: String, href: String): HtmlElement = element("a", content, "href" to href)
         fun html(head:HtmlElement, body:HtmlElement): HtmlElement {

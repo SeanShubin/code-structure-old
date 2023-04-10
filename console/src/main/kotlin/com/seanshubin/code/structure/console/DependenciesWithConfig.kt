@@ -27,12 +27,14 @@ class DependenciesWithConfig(config: CodeStructureAppConfig) {
     private val listFormat:ReportFormat = ListReportFormat(config.sourcePrefix)
     private val entryPointFormat:ReportFormat = EntryPointReportFormat(config.sourcePrefix)
     private val htmlReportFormat: ReportFormat = HtmlReportFormat(config.sourcePrefix, loadSvgLines)
+    private val cycleReportFormat:ReportFormat = CycleReportFormat(config.sourcePrefix)
     private val reportGenerator: ReportGenerator = ReportGeneratorImpl(
         htmlReportFormat,
         dotReportFormat,
         tableOfContentsReportFormat,
         listFormat,
         entryPointFormat,
+        cycleReportFormat,
         files,
         svgGenerator,
         config.reportDir,

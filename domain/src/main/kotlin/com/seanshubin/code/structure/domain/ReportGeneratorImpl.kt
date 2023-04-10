@@ -11,6 +11,7 @@ class ReportGeneratorImpl(
     private val tableOfContentsFormat:ReportFormat,
     private val listFormat:ReportFormat,
     private val entryPointFormat:ReportFormat,
+    private val cycleReportFormat:ReportFormat,
     private val files: FilesContract,
     private val svgGenerator: SvgGenerator,
     private val reportDir: Path,
@@ -35,6 +36,7 @@ class ReportGeneratorImpl(
         generateReport(tableOfContentsFormat, detail)
         generateReport(listFormat, detail)
         generateReport(entryPointFormat, detail)
+        generateReport(cycleReportFormat, detail)
     }
 
     private fun generateReport(reportFormat:ReportFormat, detail:Detail){
