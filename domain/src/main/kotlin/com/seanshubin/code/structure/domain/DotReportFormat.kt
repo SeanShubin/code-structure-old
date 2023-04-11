@@ -5,8 +5,8 @@ import com.seanshubin.code.structure.domain.NameComposer.htmlFileName
 import java.nio.file.Path
 
 class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : ReportFormat {
-    override fun report(reportDir: Path, detail: Detail, style: String): Report? {
-        if (detail.children.isEmpty()) return null
+    override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
+        if (detail.children.isEmpty()) return emptyList()
         val header = listOf(
             "digraph detangled {",
             "  bgcolor=lightgray"
@@ -15,7 +15,7 @@ class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : Re
         val footer = listOf("}")
         val lines = header + body + footer
         val name = detail.dotFileName()
-        return Report(name, lines)
+        return listOf(Report(name, lines))
     }
 
     private fun reportBody(detail: Detail, style: String): List<String> {

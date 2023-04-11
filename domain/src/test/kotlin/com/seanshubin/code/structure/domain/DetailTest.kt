@@ -639,7 +639,7 @@ class DetailTest {
 
         fun reportLines(detail: Detail): List<String> {
             val reportDir = Paths.get("should-not-exist")
-            val report = reportFormat.report(reportDir, detail, "simple") ?: return emptyList()
+            val report = reportFormat.generateReports(reportDir, detail, "simple").getOrNull(0) ?: return emptyList()
             val baseName = report.name
             val dotLines = report.lines
             return listOf(baseName) + dotLines

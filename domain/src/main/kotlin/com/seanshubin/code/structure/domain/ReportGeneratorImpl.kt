@@ -20,7 +20,7 @@ class ReportGeneratorImpl(
     override fun generateReports(detail: Detail) {
         val allDetails = detail.thisAndFlattenedChildren()
         val detailsWithChildren = allDetails.filter { it.children.isNotEmpty() }
-        val dotReports = detailsWithChildren.mapNotNull { dotReportFormat.report(reportDir, it, style) }
+        val dotReports = detailsWithChildren.flatMap { dotReportFormat.generateReports(reportDir, it, style) }
         files.createDirectories(reportDir)
         writeResource(reportDir, "dependencies.css")
         writeResource(reportDir, "reset.css")
@@ -31,7 +31,7 @@ class ReportGeneratorImpl(
             val svgFileName = it.svgFileName()
             svgGenerator.generate(reportDir, dotFileName, svgFileName)
         }
-        val htmlReports = allDetails.mapNotNull { htmlReportFormat.report(reportDir, it, style) }
+        val htmlReports = allDetails.flatMap { htmlReportFormat.generateReports(reportDir, it, style) }
         htmlReports.forEach(writeReport)
         generateReport(tableOfContentsFormat, detail)
         generateReport(listFormat, detail)
@@ -40,8 +40,8 @@ class ReportGeneratorImpl(
     }
 
     private fun generateReport(reportFormat:ReportFormat, detail:Detail){
-        val report = reportFormat.report(reportDir, detail, style)!!
-        writeReportFunction(reportDir)(report)
+        val reports = reportFormat.generateReports(reportDir, detail, style)
+        reports.forEach(writeReportFunction(reportDir))
     }
 
     private fun writeReportFunction(reportDir: Path): (Report) -> Unit = { report ->

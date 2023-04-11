@@ -11,10 +11,10 @@ class HtmlReportFormat(
     private val sourcePrefix: String,
     private val loadSvgLines: (Path, Detail) -> List<String>
 ) : ReportFormat {
-    override fun report(reportDir: Path, detail: Detail, style: String): Report? {
+    override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
         val fileName = detail.htmlFileName()
         val lines = header(detail) + body(reportDir, detail) + footer()
-        return Report(fileName, lines)
+        return listOf(Report(fileName, lines))
     }
 
     private fun header(detail: Detail): List<String> {

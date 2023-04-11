@@ -10,13 +10,13 @@ import java.nio.file.Path
 class ListReportFormat(
     private val sourcePrefix: String,
 ) : ReportFormat {
-    override fun report(reportDir: Path, detail: Detail, style: String): Report? {
+    override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
         val name = "list.html"
         val title = "All Dependencies"
         val tableOfContentsLink = HtmlElement.a("table of contents", "index.html")
         val table = createTable(detail)
         val html = GlobalHtml.standardHtml(title, tableOfContentsLink, table)
-        return Report(name, html.toLines())
+        return listOf(Report(name, html.toLines()))
     }
 
     private fun createTable(detail:Detail):HtmlElement {
