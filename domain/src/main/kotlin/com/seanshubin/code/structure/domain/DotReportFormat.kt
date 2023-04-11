@@ -6,7 +6,13 @@ import java.nio.file.Path
 
 class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : ReportFormat {
     override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
-        if (detail.children.isEmpty()) return emptyList()
+        val allDetails = detail.thisAndFlattenedChildren()
+        val detailsWithChildren = allDetails.filter { it.children.isNotEmpty() }
+        val dotReports = detailsWithChildren.map { singleReport(it, style) }
+        return dotReports
+    }
+
+    private fun singleReport(detail: Detail, style: String): Report {
         val header = listOf(
             "digraph detangled {",
             "  bgcolor=lightgray"
@@ -15,7 +21,7 @@ class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : Re
         val footer = listOf("}")
         val lines = header + body + footer
         val name = detail.dotFileName()
-        return listOf(Report(name, lines))
+        return Report(name, lines)
     }
 
     private fun reportBody(detail: Detail, style: String): List<String> {
