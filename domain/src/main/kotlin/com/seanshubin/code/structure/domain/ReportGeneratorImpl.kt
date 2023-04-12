@@ -12,6 +12,7 @@ class ReportGeneratorImpl(
     private val listFormat:ReportFormat,
     private val entryPointFormat:ReportFormat,
     private val cycleReportFormat:ReportFormat,
+    private val localCycleDotReportFormat:ReportFormat,
     private val files: FilesContract,
     private val svgGenerator: SvgGenerator,
     private val reportDir: Path,
@@ -20,35 +21,39 @@ class ReportGeneratorImpl(
     override fun generateReports(detail: Detail) {
         val allDetails = detail.thisAndFlattenedChildren()
         val detailsWithChildren = allDetails.filter { it.children.isNotEmpty() }
-        val dotReports = dotReportFormat.generateReports(reportDir, detail, style)
         files.createDirectories(reportDir)
         writeResource(reportDir, "dependencies.css")
         writeResource(reportDir, "reset.css")
-        val writeReport = writeReportFunction(reportDir)
-        dotReports.forEach(writeReport)
+        generateReports(dotReportFormat, detail)
+        generateReports(localCycleDotReportFormat, detail)
         detailsWithChildren.forEach {
             val dotFileName = it.dotFileName()
             val svgFileName = it.svgFileName()
             svgGenerator.generate(reportDir, dotFileName, svgFileName)
         }
-        val htmlReports = htmlReportFormat.generateReports(reportDir, detail, style)
-        htmlReports.forEach(writeReport)
-        generateReport(tableOfContentsFormat, detail)
-        generateReport(listFormat, detail)
-        generateReport(entryPointFormat, detail)
-        generateReport(cycleReportFormat, detail)
+        generateReports(htmlReportFormat, detail)
+        generateReports(tableOfContentsFormat, detail)
+        generateReports(listFormat, detail)
+        generateReports(entryPointFormat, detail)
+        generateReports(cycleReportFormat, detail)
     }
 
-    private fun generateReport(reportFormat:ReportFormat, detail:Detail){
+    private fun generateReports(reportFormat:ReportFormat, detail:Detail){
         val reports = reportFormat.generateReports(reportDir, detail, style)
-        reports.forEach(writeReportFunction(reportDir))
+        reports.forEach{ report ->
+            val path = report.type.resolvePath(reportDir, report.name)
+            val lines = report.lines
+            files.write(path, lines)
+            if(report.type == Report.Type.DOT){
+                generateSvg(report)
+            }
+        }
     }
 
-    private fun writeReportFunction(reportDir: Path): (Report) -> Unit = { report ->
-        val name = report.name
-        val path = reportDir.resolve(name)
-        val lines = report.lines
-        files.write(path, lines)
+    private fun generateSvg(report:Report){
+        val dotFileName = "${report.name}.txt"
+        val svgFileName = "${report.name}.svg"
+        svgGenerator.generate(reportDir, dotFileName, svgFileName)
     }
 
     private fun writeResource(dir: Path, name: String) {

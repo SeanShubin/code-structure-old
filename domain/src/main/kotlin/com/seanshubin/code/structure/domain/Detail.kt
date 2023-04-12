@@ -126,6 +126,36 @@ interface Detail {
 
     fun startsWith(other: Name): Boolean = name.startsWith(other)
 
+    private fun directDependsOnInSameCycle():List<Detail> =
+        dependsOn.intersect(cycleExcludingThis.toSet()).toList().sortedBy{it.name}
+
+    private fun directDependedOnByInSameCycle():List<Detail> =
+        dependedOnBy.intersect(cycleExcludingThis.toSet()).toList().sortedBy{it.name}
+
+    private fun localCycleRelations():List<Relation>{
+        val dependsOnRelations = directDependsOnInSameCycle().map {
+            Relation(this.name, it.name)
+        }
+        val dependedOnByRelations = directDependedOnByInSameCycle().map {
+            Relation(it.name, this.name)
+        }
+        val relations = dependsOnRelations + dependedOnByRelations
+        return relations
+    }
+
+    fun localCycleDotModel():DotModel {
+        val relations = localCycleRelations()
+        val singleNames = relations.flatMap { it.toList() }.sorted().distinct()
+        val singles = singleNames.map{
+            if(it == name){
+                DotModel.Single(it, listOf("style" to "bold"))
+            } else {
+                DotModel.Single(it)
+            }
+        }
+        return DotModel(singles, relations)
+    }
+
     companion object {
         val depthAscending = Comparator<Detail> { o1, o2 -> o1.depth.compareTo(o2.depth) }
         val depthDescending = depthAscending.reversed()

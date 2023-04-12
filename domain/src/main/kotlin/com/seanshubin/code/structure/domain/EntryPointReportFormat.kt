@@ -11,12 +11,12 @@ class EntryPointReportFormat(
     private val sourcePrefix: String,
 ) : ReportFormat {
     override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
-        val name = "entry-points.html"
+        val name = "entry-points"
         val title = "Entry points or dead code"
         val tableOfContentsLink = HtmlElement.a("table of contents", "index.html")
         val table = createTable(detail)
         val html = GlobalHtml.standardHtml(title, tableOfContentsLink, table)
-        return listOf(Report(name, html.toLines()))
+        return listOf(Report(name, html.toLines(), Report.Type.HTML))
     }
 
     private fun createTable(detail:Detail):HtmlElement {

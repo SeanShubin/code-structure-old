@@ -11,12 +11,12 @@ class CycleReportFormat(
     private val sourcePrefix: String,
 ) : ReportFormat {
     override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
-        val name = "cycles.html"
+        val name = "cycles"
         val title = "Cycles"
         val tableOfContentsLink = HtmlElement.a("table of contents", "index.html")
         val tables = createFieldsets(detail)
         val html = GlobalHtml.standardHtml(title, tableOfContentsLink, tables)
-        return listOf(Report(name, html.toLines()))
+        return listOf(Report(name, html.toLines(), Report.Type.HTML))
     }
 
     private fun createFieldsets(detail:Detail):HtmlElement {

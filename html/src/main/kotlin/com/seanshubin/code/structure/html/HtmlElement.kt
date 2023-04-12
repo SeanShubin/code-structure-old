@@ -35,6 +35,7 @@ interface HtmlElement {
 
     companion object {
         fun h1(content: String): HtmlElement = element("h1", content)
+        fun pre(lines: List<String>): HtmlElement = element("pre", lines.joinToString("\n"))
         fun p(element: HtmlElement): HtmlElement = element("p", element)
         fun head(vararg elements: HtmlElement): HtmlElement = element("head", *elements)
         fun body(vararg elements: HtmlElement): HtmlElement = element("body", *elements)

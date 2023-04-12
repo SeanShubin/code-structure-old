@@ -1,5 +1,6 @@
 package com.seanshubin.code.structure.domain
 
+import com.seanshubin.code.structure.domain.NameComposer.baseFileName
 import com.seanshubin.code.structure.domain.NameComposer.dotFileName
 import com.seanshubin.code.structure.domain.NameComposer.htmlFileName
 import java.nio.file.Path
@@ -20,8 +21,8 @@ class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : Re
         val body = reportBody(detail, style).indent("  ")
         val footer = listOf("}")
         val lines = header + body + footer
-        val name = detail.dotFileName()
-        return Report(name, lines)
+        val name = detail.baseFileName()
+        return Report(name, lines, Report.Type.DOT)
     }
 
     private fun reportBody(detail: Detail, style: String): List<String> {

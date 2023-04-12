@@ -1,6 +1,7 @@
 package com.seanshubin.code.structure.domain
 
 import com.seanshubin.code.structure.domain.Detail.Companion.depthDescendingNameAscending
+import com.seanshubin.code.structure.domain.NameComposer.baseFileName
 import com.seanshubin.code.structure.domain.NameComposer.htmlAnchor
 import com.seanshubin.code.structure.domain.NameComposer.htmlDisplay
 import com.seanshubin.code.structure.domain.NameComposer.htmlFileName
@@ -17,9 +18,9 @@ class HtmlReportFormat(
     }
 
     private fun singleReport(reportDir: Path, detail: Detail, style: String): Report {
-        val fileName = detail.htmlFileName()
+        val fileName = detail.baseFileName()
         val lines = header(detail) + body(reportDir, detail) + footer()
-        return Report(fileName, lines)
+        return Report(fileName, lines, Report.Type.HTML)
     }
 
     private fun header(detail: Detail): List<String> {

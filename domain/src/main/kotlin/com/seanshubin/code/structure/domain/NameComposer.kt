@@ -12,6 +12,11 @@ object NameComposer {
     fun List<String>.htmlAnchor():String = """<a href="${htmlAnchorReportLink()}">${htmlAnchorReportDisplayName()}</a>"""
     fun List<String>.dotFileName():String = baseFileName() + ".txt"
     fun List<String>.svgFileName():String = baseFileName() + ".svg"
+    fun List<String>.localCycleDotReportBaseName():String {
+        val nameParts = listOf("local", "cycle") + this
+        val baseName = nameParts.joinToString("-")
+        return baseName
+    }
 
     fun Name.htmlDisplay():String = parts.htmlAnchorReportDisplayName()
     fun Name.htmlAnchor():String = parts.htmlAnchor()
@@ -25,6 +30,8 @@ object NameComposer {
         parts.htmlAnchorReportLink()
     fun Name.htmlAnchorSourceDisplayName():String =
         parts.htmlAnchorSourceDisplayName()
+    fun Name.localCycleDotReportBaseName():String =
+        parts.localCycleDotReportBaseName()
 
     fun Detail.baseFileName():String = name.baseFileName()
     fun Detail.htmlDisplay():String = name.htmlDisplay()
@@ -43,6 +50,8 @@ object NameComposer {
         name.htmlAnchorReportLink()
     fun Detail.htmlAnchorSourceDisplayName():String =
         name.htmlAnchorSourceDisplayName()
+    fun Detail.localCycleDotReportBaseName():String =
+        name.localCycleDotReportBaseName()
 
     fun Relation.htmlDisplay():String = "${first.htmlDisplay()} -> ${second.htmlDisplay()}"
 }
