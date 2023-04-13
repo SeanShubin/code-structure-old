@@ -17,6 +17,10 @@ object NameComposer {
         val baseName = nameParts.joinToString("-")
         return baseName
     }
+    fun List<String>.localCycleDisplayName():String =
+        localCycleDotReportBaseName()
+    fun List<String>.localCycleLink():String =
+        localCycleDotReportBaseName() + ".html"
 
     fun Name.htmlDisplay():String = parts.htmlAnchorReportDisplayName()
     fun Name.htmlAnchor():String = parts.htmlAnchor()
@@ -32,6 +36,10 @@ object NameComposer {
         parts.htmlAnchorSourceDisplayName()
     fun Name.localCycleDotReportBaseName():String =
         parts.localCycleDotReportBaseName()
+    fun Name.localCycleDisplayName():String =
+        parts.localCycleDisplayName()
+    fun Name.localCycleLink():String =
+        parts.localCycleLink()
 
     fun Detail.baseFileName():String = name.baseFileName()
     fun Detail.htmlDisplay():String = name.htmlDisplay()
@@ -52,6 +60,10 @@ object NameComposer {
         name.htmlAnchorSourceDisplayName()
     fun Detail.localCycleDotReportBaseName():String =
         name.localCycleDotReportBaseName()
+    fun Detail.localCycleDisplayName():String =
+        name.localCycleDisplayName()
+    fun Detail.localCycleLink():String =
+        name.localCycleLink()
 
     fun Relation.htmlDisplay():String = "${first.htmlDisplay()} -> ${second.htmlDisplay()}"
 }

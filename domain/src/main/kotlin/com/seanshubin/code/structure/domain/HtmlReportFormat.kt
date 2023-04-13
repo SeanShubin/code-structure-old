@@ -10,7 +10,7 @@ import java.nio.file.Path
 
 class HtmlReportFormat(
     private val sourcePrefix: String,
-    private val loadSvgLines: (Path, Detail) -> List<String>
+    private val loadSvgLines: (Path, String) -> List<String>
 ) : ReportFormat {
     override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
         val allDetails = detail.thisAndFlattenedChildren()
@@ -70,7 +70,7 @@ class HtmlReportFormat(
 
     private fun graph(reportDir: Path, detail: Detail): List<String> {
         if (detail.children.isEmpty()) return emptyList()
-        val svgLines = loadSvgLines(reportDir, detail)
+        val svgLines = loadSvgLines(reportDir, detail.baseFileName())
         return svgLines
     }
 

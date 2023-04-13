@@ -13,6 +13,7 @@ class ReportGeneratorImpl(
     private val entryPointFormat:ReportFormat,
     private val cycleReportFormat:ReportFormat,
     private val localCycleDotReportFormat:ReportFormat,
+    private val localCycleHtmlReportFormat:ReportFormat,
     private val files: FilesContract,
     private val svgGenerator: SvgGenerator,
     private val reportDir: Path,
@@ -36,6 +37,7 @@ class ReportGeneratorImpl(
         generateReports(listFormat, detail)
         generateReports(entryPointFormat, detail)
         generateReports(cycleReportFormat, detail)
+        generateReports(localCycleHtmlReportFormat, detail)
     }
 
     private fun generateReports(reportFormat:ReportFormat, detail:Detail){

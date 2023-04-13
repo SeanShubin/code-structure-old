@@ -6,9 +6,9 @@ import java.nio.file.Path
 
 class SvgLoader(
     private val files:FilesContract
-):(Path, Detail)->List<String> {
-    override fun invoke(reportDir: Path, detail: Detail): List<String> {
-        val svgFileName = detail.svgFileName()
+):(Path, String)->List<String> {
+    override fun invoke(reportDir: Path, baseName:String): List<String> {
+        val svgFileName = "$baseName.svg"
         val svgPath = reportDir.resolve(svgFileName)
         return files.readAllLines(svgPath)
     }

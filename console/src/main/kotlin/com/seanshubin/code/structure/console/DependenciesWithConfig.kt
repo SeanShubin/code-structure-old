@@ -22,13 +22,14 @@ class DependenciesWithConfig(config: CodeStructureAppConfig) {
         "table" to tableReportStyle
     )
     private val dotReportFormat: ReportFormat = DotReportFormat(reportStyleMap)
-    private val loadSvgLines: (Path, Detail) -> List<String> = SvgLoader(files)
+    private val loadSvgLines: (Path, String) -> List<String> = SvgLoader(files)
     private val tableOfContentsReportFormat:ReportFormat = TableOfContentsReportFormat()
     private val listFormat:ReportFormat = ListReportFormat(config.sourcePrefix)
     private val entryPointFormat:ReportFormat = EntryPointReportFormat(config.sourcePrefix)
     private val htmlReportFormat: ReportFormat = HtmlReportFormat(config.sourcePrefix, loadSvgLines)
     private val cycleReportFormat:ReportFormat = CycleReportFormat(config.sourcePrefix)
     private val localCycleDotReportFormat:ReportFormat = LocalCycleDotReportFormat()
+    private val localCycleHtmlReportFormat:ReportFormat = LocalCycleHtmlReportFormat(loadSvgLines)
     private val reportGenerator: ReportGenerator = ReportGeneratorImpl(
         htmlReportFormat,
         dotReportFormat,
@@ -37,6 +38,7 @@ class DependenciesWithConfig(config: CodeStructureAppConfig) {
         entryPointFormat,
         cycleReportFormat,
         localCycleDotReportFormat,
+        localCycleHtmlReportFormat,
         files,
         svgGenerator,
         config.reportDir,
