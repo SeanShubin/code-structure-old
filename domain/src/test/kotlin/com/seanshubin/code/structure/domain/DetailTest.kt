@@ -566,7 +566,7 @@ class DetailTest {
         // given
         val detail = DetailBuilder.fromLines(sample)
         val expected = """
-            dependencies.txt
+            report-dir/dependencies.txt
             digraph detangled {
               bgcolor=lightgray
               "a" [URL="dependencies-a.html" fontcolor=Blue label="a (1)"]
@@ -584,22 +584,22 @@ class DetailTest {
                 "g" -> "c"
               }
             }
-            dependencies-a.txt
+            report-dir/dependencies-a.txt
             digraph detangled {
               bgcolor=lightgray
               "b" [label="b"]
             }
-            dependencies-c.txt
+            report-dir/dependencies-c.txt
             digraph detangled {
               bgcolor=lightgray
               "d" [label="d"]
             }
-            dependencies-e.txt
+            report-dir/dependencies-e.txt
             digraph detangled {
               bgcolor=lightgray
               "f" [URL="dependencies-e-f.html" fontcolor=Blue label="f (5)"]
             }
-            dependencies-e-f.txt
+            report-dir/dependencies-e-f.txt
             digraph detangled {
               bgcolor=lightgray
               "k" [label="k"]
@@ -617,12 +617,12 @@ class DetailTest {
                 "n" -> "l"
               }
             }
-            dependencies-g.txt
+            report-dir/dependencies-g.txt
             digraph detangled {
               bgcolor=lightgray
               "h" [label="h"]
             }
-            dependencies-i.txt
+            report-dir/dependencies-i.txt
             digraph detangled {
               bgcolor=lightgray
               "j" [label="j"]
@@ -638,11 +638,12 @@ class DetailTest {
         val reportFormat: ReportFormat = DotReportFormat(reportStyleMap)
 
         fun reportLines(detail: Detail): List<String> {
-            val reportDir = Paths.get("should-not-exist")
+            val reportDir = Paths.get("report-dir")
             val report = reportFormat.generateReports(reportDir, detail, "simple").getOrNull(0) ?: return emptyList()
             val baseName = report.name
             val dotLines = report.lines
-            return listOf(baseName) + dotLines
+            val path = report.type.resolvePath(reportDir, baseName)
+            return listOf(path.toString()) + dotLines
         }
 
         // when
@@ -657,77 +658,107 @@ class DetailTest {
         // given
         val detail = DetailBuilder.fromLines(sample)
         val expected = """
-            dependencies.txt
+            report-path/local-cycle-c-d.txt
             digraph detangled {
               bgcolor=lightgray
-              "a" [URL="dependencies-a.html" fontcolor=Blue label="a (1)"]
-              "c" [URL="dependencies-c.html" fontcolor=Blue label="c (1)"]
-              "e" [URL="dependencies-e.html" fontcolor=Blue label="e (6)"]
-              "g" [URL="dependencies-g.html" fontcolor=Blue label="g (1)"]
-              "i" [URL="dependencies-i.html" fontcolor=Blue label="i (1)"]
-              "a" -> "c"
-              "g" -> "i"
-              subgraph cluster_0 {
-                penwidth=2
-                pencolor=Red
-                "c" -> "e"
-                "e" -> "g"
-                "g" -> "c"
-              }
+              "c.d" [style="bold" fontcolor="blue" URL="dependencies-c-d.html"];
+              "e.f.l" [fontcolor="blue" URL="local-cycle-e-f-l.html"];
+              "g.h" [fontcolor="blue" URL="local-cycle-g-h.html"];
+              "c.d" -> "e.f.l";
+              "g.h" -> "c.d";
             }
-            dependencies-a.txt
+            report-path/local-cycle-c-d.txt
             digraph detangled {
               bgcolor=lightgray
-              "b" [label="b"]
+              "c.d" [style="bold" fontcolor="blue" URL="dependencies-c-d.html"];
+              "e.f.l" [fontcolor="blue" URL="local-cycle-e-f-l.html"];
+              "g.h" [fontcolor="blue" URL="local-cycle-g-h.html"];
+              "c.d" -> "e.f.l";
+              "g.h" -> "c.d";
             }
-            dependencies-c.txt
+            report-path/local-cycle-c-d.txt
             digraph detangled {
               bgcolor=lightgray
-              "d" [label="d"]
+              "c.d" [style="bold" fontcolor="blue" URL="dependencies-c-d.html"];
+              "e.f.l" [fontcolor="blue" URL="local-cycle-e-f-l.html"];
+              "g.h" [fontcolor="blue" URL="local-cycle-g-h.html"];
+              "c.d" -> "e.f.l";
+              "g.h" -> "c.d";
             }
-            dependencies-e.txt
+            report-path/local-cycle-c-d.txt
             digraph detangled {
               bgcolor=lightgray
-              "f" [URL="dependencies-e-f.html" fontcolor=Blue label="f (5)"]
+              "c.d" [style="bold" fontcolor="blue" URL="dependencies-c-d.html"];
+              "e.f.l" [fontcolor="blue" URL="local-cycle-e-f-l.html"];
+              "g.h" [fontcolor="blue" URL="local-cycle-g-h.html"];
+              "c.d" -> "e.f.l";
+              "g.h" -> "c.d";
             }
-            dependencies-e-f.txt
+            report-path/local-cycle-c-d.txt
             digraph detangled {
               bgcolor=lightgray
-              "k" [label="k"]
-              "l" [label="l"]
-              "m" [label="m"]
-              "n" [label="n"]
-              "o" [label="o"]
-              "k" -> "l"
-              "n" -> "o"
-              subgraph cluster_0 {
-                penwidth=2
-                pencolor=Red
-                "l" -> "m"
-                "m" -> "n"
-                "n" -> "l"
-              }
+              "c.d" [style="bold" fontcolor="blue" URL="dependencies-c-d.html"];
+              "e.f.l" [fontcolor="blue" URL="local-cycle-e-f-l.html"];
+              "g.h" [fontcolor="blue" URL="local-cycle-g-h.html"];
+              "c.d" -> "e.f.l";
+              "g.h" -> "c.d";
             }
-            dependencies-g.txt
+            report-path/local-cycle-c-d.txt
             digraph detangled {
               bgcolor=lightgray
-              "h" [label="h"]
+              "c.d" [style="bold" fontcolor="blue" URL="dependencies-c-d.html"];
+              "e.f.l" [fontcolor="blue" URL="local-cycle-e-f-l.html"];
+              "g.h" [fontcolor="blue" URL="local-cycle-g-h.html"];
+              "c.d" -> "e.f.l";
+              "g.h" -> "c.d";
             }
-            dependencies-i.txt
+            report-path/local-cycle-c-d.txt
             digraph detangled {
               bgcolor=lightgray
-              "j" [label="j"]
+              "c.d" [style="bold" fontcolor="blue" URL="dependencies-c-d.html"];
+              "e.f.l" [fontcolor="blue" URL="local-cycle-e-f-l.html"];
+              "g.h" [fontcolor="blue" URL="local-cycle-g-h.html"];
+              "c.d" -> "e.f.l";
+              "g.h" -> "c.d";
+            }
+            report-path/local-cycle-c-d.txt
+            digraph detangled {
+              bgcolor=lightgray
+              "c.d" [style="bold" fontcolor="blue" URL="dependencies-c-d.html"];
+              "e.f.l" [fontcolor="blue" URL="local-cycle-e-f-l.html"];
+              "g.h" [fontcolor="blue" URL="local-cycle-g-h.html"];
+              "c.d" -> "e.f.l";
+              "g.h" -> "c.d";
+            }
+            report-path/local-cycle-c-d.txt
+            digraph detangled {
+              bgcolor=lightgray
+              "c.d" [style="bold" fontcolor="blue" URL="dependencies-c-d.html"];
+              "e.f.l" [fontcolor="blue" URL="local-cycle-e-f-l.html"];
+              "g.h" [fontcolor="blue" URL="local-cycle-g-h.html"];
+              "c.d" -> "e.f.l";
+              "g.h" -> "c.d";
+            }
+            report-path/local-cycle-c-d.txt
+            digraph detangled {
+              bgcolor=lightgray
+              "c.d" [style="bold" fontcolor="blue" URL="dependencies-c-d.html"];
+              "e.f.l" [fontcolor="blue" URL="local-cycle-e-f-l.html"];
+              "g.h" [fontcolor="blue" URL="local-cycle-g-h.html"];
+              "c.d" -> "e.f.l";
+              "g.h" -> "c.d";
             }
         """.trimIndent()
 
         val reportFormat: ReportFormat = LocalCycleDotReportFormat()
 
         fun reportLines(detail: Detail): List<String> {
-            val reportDir = Paths.get("should-not-exist")
+            val reportDir = Paths.get("report-path")
             val report = reportFormat.generateReports(reportDir, detail, "simple").getOrNull(0) ?: return emptyList()
             val baseName = report.name
+            val path = report.type.resolvePath(reportDir, baseName)
             val dotLines = report.lines
-            return listOf(baseName) + dotLines
+            return listOf(path.toString()) + dotLines
         }
 
         // when

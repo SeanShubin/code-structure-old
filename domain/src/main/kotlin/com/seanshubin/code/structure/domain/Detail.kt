@@ -3,6 +3,8 @@ package com.seanshubin.code.structure.domain
 import com.seanshubin.code.structure.domain.Comparators.nameListComparator
 import com.seanshubin.code.structure.domain.Comparators.pairCycleListOfRelationComparator
 import com.seanshubin.code.structure.domain.FoldFunctions.collapseToMapOfList
+import com.seanshubin.code.structure.domain.NameComposer.htmlAnchorReportLink
+import com.seanshubin.code.structure.domain.NameComposer.localCycleLink
 
 interface Detail {
     val name: Name
@@ -148,9 +150,9 @@ interface Detail {
         val singleNames = relations.flatMap { it.toList() }.sorted().distinct()
         val singles = singleNames.map{
             if(it == name){
-                DotModel.Single(it, listOf("style" to "bold"))
+                DotModel.Single(it, listOf("style" to "bold", "fontcolor" to "blue", "URL" to it.htmlAnchorReportLink()))
             } else {
-                DotModel.Single(it)
+                DotModel.Single(it, listOf("fontcolor" to "blue", "URL" to it.localCycleLink()))
             }
         }
         return DotModel(singles, relations)

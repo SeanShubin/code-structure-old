@@ -68,7 +68,7 @@ class HtmlElementTest {
             <html>
               <head>
                 <title>
-                  the-title
+                  the title
                 </title>
               </head>
               <body>
