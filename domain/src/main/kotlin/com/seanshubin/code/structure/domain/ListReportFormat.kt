@@ -19,7 +19,7 @@ class ListReportFormat(
         return listOf(Report(name, html.toLines(), Report.Type.HTML))
     }
 
-    private fun createTable(detail:Detail):HtmlElement {
+    private fun createTable(detail: Detail): HtmlElement {
         val list = detail.allWithSource()
         val headerRow = createHeaderRow()
         val rows = list.map(::createRow)
@@ -29,7 +29,7 @@ class ListReportFormat(
         return fieldset
     }
 
-    private fun createRow(detail:Detail):HtmlElement {
+    private fun createRow(detail: Detail): HtmlElement {
         val tdList = listOf(
             HtmlElement.td(reportAnchor(detail)),
             HtmlElement.td(detail.depth.toString()),
@@ -42,13 +42,17 @@ class ListReportFormat(
         return tr
     }
 
-    fun reportAnchor(detail:Detail):HtmlElement =
+    fun reportAnchor(detail: Detail): HtmlElement =
         HtmlElement.a(detail.htmlAnchorReportDisplayName(), detail.htmlAnchorReportLink())
-    fun sourceAnchor(detail:Detail):HtmlElement =
-        HtmlElement.a(detail.htmlAnchorSourceDisplayName(), detail.htmlAnchorSourceLink(sourcePrefix) ?: "source missing")
 
-    private fun createHeaderRow():HtmlElement {
-        val headerNames = listOf("report","depth", "transitive", "depends on", "depended on by", "source")
+    fun sourceAnchor(detail: Detail): HtmlElement =
+        HtmlElement.a(
+            detail.htmlAnchorSourceDisplayName(),
+            detail.htmlAnchorSourceLink(sourcePrefix) ?: "source missing"
+        )
+
+    private fun createHeaderRow(): HtmlElement {
+        val headerNames = listOf("report", "depth", "transitive", "depends on", "depended on by", "source")
         val cells = headerNames.map(HtmlElement::th)
         val row = HtmlElement.tr(cells)
         return row

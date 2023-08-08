@@ -8,12 +8,12 @@ import java.nio.file.Path
 class ReportGeneratorImpl(
     private val htmlReportFormat: ReportFormat,
     private val dotReportFormat: ReportFormat,
-    private val tableOfContentsFormat:ReportFormat,
-    private val listFormat:ReportFormat,
-    private val entryPointFormat:ReportFormat,
-    private val cycleReportFormat:ReportFormat,
-    private val localCycleDotReportFormat:ReportFormat,
-    private val localCycleHtmlReportFormat:ReportFormat,
+    private val tableOfContentsFormat: ReportFormat,
+    private val listFormat: ReportFormat,
+    private val entryPointFormat: ReportFormat,
+    private val cycleReportFormat: ReportFormat,
+    private val localCycleDotReportFormat: ReportFormat,
+    private val localCycleHtmlReportFormat: ReportFormat,
     private val files: FilesContract,
     private val svgGenerator: SvgGenerator,
     private val reportDir: Path,
@@ -40,19 +40,19 @@ class ReportGeneratorImpl(
         generateReports(localCycleHtmlReportFormat, detail)
     }
 
-    private fun generateReports(reportFormat:ReportFormat, detail:Detail){
+    private fun generateReports(reportFormat: ReportFormat, detail: Detail) {
         val reports = reportFormat.generateReports(reportDir, detail)
-        reports.forEach{ report ->
+        reports.forEach { report ->
             val path = report.type.resolvePath(reportDir, report.name)
             val lines = report.lines
             files.write(path, lines)
-            if(report.type == Report.Type.DOT){
+            if (report.type == Report.Type.DOT) {
                 generateSvg(report)
             }
         }
     }
 
-    private fun generateSvg(report:Report){
+    private fun generateSvg(report: Report) {
         val dotFileName = "${report.name}.txt"
         val svgFileName = "${report.name}.svg"
         svgGenerator.generate(reportDir, dotFileName, svgFileName)

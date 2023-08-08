@@ -3,7 +3,6 @@ package com.seanshubin.code.structure.domain
 import com.seanshubin.code.structure.contract.FilesContract
 import com.seanshubin.code.structure.contract.SystemContract
 import java.nio.file.Path
-import java.nio.file.Paths
 
 class Runner(
     private val inputFile: Path,

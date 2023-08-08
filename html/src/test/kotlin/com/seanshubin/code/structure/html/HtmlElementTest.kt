@@ -5,7 +5,7 @@ import kotlin.test.assertEquals
 
 class HtmlElementTest {
     @Test
-    fun singleLine(){
+    fun singleLine() {
         // given
         val element = HtmlElement.h1("foo")
         val expected = """
@@ -20,8 +20,9 @@ class HtmlElementTest {
         // then
         assertEquals(expected, actual)
     }
+
     @Test
-    fun attribute(){
+    fun attribute() {
         // given
         val element = HtmlElement.a("content", "link")
         val expected = """
@@ -36,8 +37,9 @@ class HtmlElementTest {
         // then
         assertEquals(expected, actual)
     }
+
     @Test
-    fun nested(){
+    fun nested() {
         // given
         val aElement = HtmlElement.a("the-content", "the-link")
         val pElement = HtmlElement.p(aElement)
@@ -55,8 +57,9 @@ class HtmlElementTest {
         // then
         assertEquals(expected, actual)
     }
+
     @Test
-    fun html(){
+    fun html() {
         // given
         val aElement = HtmlElement.a("the-link-name", "the-link")
         val pElement = HtmlElement.p(aElement)

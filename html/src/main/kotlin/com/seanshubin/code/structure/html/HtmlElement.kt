@@ -43,23 +43,27 @@ interface HtmlElement {
         fun div(vararg elements: HtmlElement): HtmlElement = div(*elements)
         fun title(content: String): HtmlElement = element("title", content)
         fun a(content: String, href: String): HtmlElement = element("a", content, "href" to href)
-        fun html(head:HtmlElement, body:HtmlElement): HtmlElement {
+        fun html(head: HtmlElement, body: HtmlElement): HtmlElement {
             return element("html", head, body)
         }
-        fun table(headerRows:List<HtmlElement>, bodyRows:List<HtmlElement>):HtmlElement =
+
+        fun table(headerRows: List<HtmlElement>, bodyRows: List<HtmlElement>): HtmlElement =
             element("table", thead(headerRows), tbody(bodyRows))
-        fun thead(rows:List<HtmlElement>):HtmlElement = element("thead", rows)
-        fun tbody(rows:List<HtmlElement>):HtmlElement = element("tbody", rows)
-        fun th(s:String):HtmlElement = element("th", s)
-        fun td(s:String):HtmlElement = element("td", s)
-        fun td(element:HtmlElement):HtmlElement = element("td", element)
-        fun tr(cells:List<HtmlElement>):HtmlElement = element("tr", cells)
-        fun meta(vararg attributes:Pair<String, String>):HtmlElement =
-            Tag("meta", attributes=attributes.toList())
-        fun link(rel:String, href:String):HtmlElement =
+
+        fun thead(rows: List<HtmlElement>): HtmlElement = element("thead", rows)
+        fun tbody(rows: List<HtmlElement>): HtmlElement = element("tbody", rows)
+        fun th(s: String): HtmlElement = element("th", s)
+        fun td(s: String): HtmlElement = element("td", s)
+        fun td(element: HtmlElement): HtmlElement = element("td", element)
+        fun tr(cells: List<HtmlElement>): HtmlElement = element("tr", cells)
+        fun meta(vararg attributes: Pair<String, String>): HtmlElement =
+            Tag("meta", attributes = attributes.toList())
+
+        fun link(rel: String, href: String): HtmlElement =
             Tag("link", attributes = listOf("rel" to rel, "href" to href))
-        fun legend(caption:String):HtmlElement = element("legend", caption)
-        fun fieldset(caption:String, vararg elements:HtmlElement):HtmlElement {
+
+        fun legend(caption: String): HtmlElement = element("legend", caption)
+        fun fieldset(caption: String, vararg elements: HtmlElement): HtmlElement {
             val legend = legend(caption)
             val allElements = listOf(legend) + elements
             return element("fieldset", allElements)
@@ -70,6 +74,7 @@ interface HtmlElement {
 
         private fun element(tag: String, elements: List<HtmlElement>): HtmlElement =
             Tag(tag, elements)
+
         private fun element(tag: String, vararg elements: HtmlElement): HtmlElement =
             element(tag, elements.toList())
 

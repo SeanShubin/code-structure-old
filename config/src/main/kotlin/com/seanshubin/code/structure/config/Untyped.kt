@@ -31,14 +31,14 @@ class Untyped(val value: Any?) {
             Untyped(innerValue).getValueAtPath(*remainingKeys)
         }
 
-    fun setValueAtPath(valueToSet:Any?, vararg keys:Any?):Untyped =
-        if(keys.isEmpty()) {
+    fun setValueAtPath(valueToSet: Any?, vararg keys: Any?): Untyped =
+        if (keys.isEmpty()) {
             Untyped(valueToSet)
         } else {
-            if(valueIsMap()){
+            if (valueIsMap()) {
                 val key = keys[0]
                 val mapValue = valueAsMap()
-                val innerValue = if(mapValue.containsKey(key)){
+                val innerValue = if (mapValue.containsKey(key)) {
                     mapValue.getValue(key)
                 } else {
                     emptyMap<Any?, Any?>()

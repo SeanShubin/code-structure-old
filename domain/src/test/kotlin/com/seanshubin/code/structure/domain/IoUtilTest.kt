@@ -1,8 +1,8 @@
 package com.seanshubin.code.structure.domain
 
-import kotlin.test.Test
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class IoUtilTest {

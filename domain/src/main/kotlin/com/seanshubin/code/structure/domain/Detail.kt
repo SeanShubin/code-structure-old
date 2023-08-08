@@ -27,18 +27,18 @@ interface Detail {
             listOf(child) + child.flattenChildren()
         }.sortedBy { it.name }.distinctBy { it.name }
 
-    fun allWithSource():List<Detail> =
+    fun allWithSource(): List<Detail> =
         thisAndFlattenedChildren().filter { it.source != null }
 
-    fun entryPoints():List<Detail> = allWithSource().filter { it.dependedOnBy.isEmpty() }
+    fun entryPoints(): List<Detail> = allWithSource().filter { it.dependedOnBy.isEmpty() }
 
-    fun findAllCycles():List<List<Detail>> {
+    fun findAllCycles(): List<List<Detail>> {
         val all = allWithSource()
         val allCycles = mutableListOf<List<Detail>>()
         all.forEach { current ->
-            if(current.isPartOfCycle()){
+            if (current.isPartOfCycle()) {
                 val currentCycle = current.cycleIncludingThis
-                if(!allCycles.contains(currentCycle)){
+                if (!allCycles.contains(currentCycle)) {
                     allCycles.add(currentCycle)
                 }
             }
@@ -46,7 +46,7 @@ interface Detail {
         return allCycles
     }
 
-    fun isPartOfCycle():Boolean = cycleExcludingThis.isNotEmpty()
+    fun isPartOfCycle(): Boolean = cycleExcludingThis.isNotEmpty()
 
     fun relations(): RelationsByType {
         val allChildren = flattenChildren()
@@ -128,13 +128,13 @@ interface Detail {
 
     fun startsWith(other: Name): Boolean = name.startsWith(other)
 
-    private fun directDependsOnInSameCycle():List<Detail> =
-        dependsOn.intersect(cycleExcludingThis.toSet()).toList().sortedBy{it.name}
+    private fun directDependsOnInSameCycle(): List<Detail> =
+        dependsOn.intersect(cycleExcludingThis.toSet()).toList().sortedBy { it.name }
 
-    private fun directDependedOnByInSameCycle():List<Detail> =
-        dependedOnBy.intersect(cycleExcludingThis.toSet()).toList().sortedBy{it.name}
+    private fun directDependedOnByInSameCycle(): List<Detail> =
+        dependedOnBy.intersect(cycleExcludingThis.toSet()).toList().sortedBy { it.name }
 
-    private fun localCycleRelations():List<Relation>{
+    private fun localCycleRelations(): List<Relation> {
         val dependsOnRelations = directDependsOnInSameCycle().map {
             Relation(this.name, it.name)
         }
@@ -145,12 +145,15 @@ interface Detail {
         return relations
     }
 
-    fun localCycleDotModel():DotModel {
+    fun localCycleDotModel(): DotModel {
         val relations = localCycleRelations()
         val singleNames = relations.flatMap { it.toList() }.sorted().distinct()
-        val singles = singleNames.map{
-            if(it == name){
-                DotModel.Single(it, listOf("style" to "bold", "fontcolor" to "blue", "URL" to it.htmlAnchorReportLink()))
+        val singles = singleNames.map {
+            if (it == name) {
+                DotModel.Single(
+                    it,
+                    listOf("style" to "bold", "fontcolor" to "blue", "URL" to it.htmlAnchorReportLink())
+                )
             } else {
                 DotModel.Single(it, listOf("fontcolor" to "blue", "URL" to it.localCycleLink()))
             }

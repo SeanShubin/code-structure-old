@@ -4,7 +4,6 @@ import com.seanshubin.code.structure.domain.Detail.Companion.depthDescendingName
 import com.seanshubin.code.structure.domain.NameComposer.baseFileName
 import com.seanshubin.code.structure.domain.NameComposer.htmlAnchor
 import com.seanshubin.code.structure.domain.NameComposer.htmlDisplay
-import com.seanshubin.code.structure.domain.NameComposer.htmlFileName
 import com.seanshubin.code.structure.domain.NameComposer.htmlSourceAnchor
 import java.nio.file.Path
 

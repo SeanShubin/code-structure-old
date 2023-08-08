@@ -7,7 +7,7 @@ import java.io.PrintStream
 import java.nio.channels.Channel
 import java.util.*
 
-interface SystemContractUnsupportedOperation: SystemContract {
+interface SystemContractUnsupportedOperation : SystemContract {
     override fun setIn(`in`: InputStream) {
         throw UnsupportedOperationException("not implemented")
     }

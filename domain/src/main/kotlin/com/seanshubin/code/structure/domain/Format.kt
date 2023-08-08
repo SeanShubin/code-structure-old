@@ -9,7 +9,7 @@ object Format {
         val name = Name(matchResult.groupValues[1].split("."))
         val binary = matchResult.groupValues[2]
         val sourceValue = matchResult.groupValues[3]
-        val source = if(sourceValue == "null") null else sourceValue
+        val source = if (sourceValue == "null") null else sourceValue
         return NameBinarySource(name, binary, source)
     }
 
@@ -24,17 +24,17 @@ object Format {
         val nameSources = mutableListOf<NameBinarySource>()
         val relations = mutableListOf<Relation>()
         lines.forEachIndexed { index, line ->
-                val relation = parseRelation(line)
-                if (relation == null) {
-                    val nameSource = parseNameSource(line)
-                    if (nameSource == null) {
-                        throw RuntimeException("Input line '$line' at index $index did not match '$nameBinarySourceRegex' or '$relationRegex'")
-                    } else {
-                        nameSources.add(nameSource)
-                    }
+            val relation = parseRelation(line)
+            if (relation == null) {
+                val nameSource = parseNameSource(line)
+                if (nameSource == null) {
+                    throw RuntimeException("Input line '$line' at index $index did not match '$nameBinarySourceRegex' or '$relationRegex'")
                 } else {
-                    relations.add(relation)
+                    nameSources.add(nameSource)
                 }
+            } else {
+                relations.add(relation)
+            }
         }
         return Pair(nameSources, relations)
     }

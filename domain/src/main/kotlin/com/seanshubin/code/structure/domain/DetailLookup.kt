@@ -29,7 +29,7 @@ class DetailLookup(
 
     override fun toString(): String = if (name.parts.isEmpty()) "<root>" else name.parts.joinToString(".")
     override fun equals(other: Any?): Boolean =
-        if(other is DetailLookup){
+        if (other is DetailLookup) {
             value == other.value
         } else {
             false

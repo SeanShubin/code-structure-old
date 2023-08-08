@@ -629,7 +629,7 @@ class DetailTest {
             }
         """.trimIndent()
 
-        val reportStyle:ReportStyle = ReportStyle.SIMPLE
+        val reportStyle: ReportStyle = ReportStyle.SIMPLE
         val reportFormat: ReportFormat = DotReportFormat(reportStyle)
 
         fun reportLines(detail: Detail): List<String> {

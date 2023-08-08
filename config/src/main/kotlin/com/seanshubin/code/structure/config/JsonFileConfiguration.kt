@@ -1,16 +1,16 @@
 package com.seanshubin.code.structure.config
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.seanshubin.code.structure.config.Converters.InstantConverter
+import com.seanshubin.code.structure.config.Converters.IntConverter
+import com.seanshubin.code.structure.config.Converters.PathConverter
+import com.seanshubin.code.structure.config.Converters.PathListConverter
+import com.seanshubin.code.structure.config.Converters.StringConverter
+import com.seanshubin.code.structure.config.Converters.StringListConverter
 import com.seanshubin.code.structure.contract.FilesContract
+import com.seanshubin.code.structure.json.JsonMappers
 import java.nio.file.Path
 import java.time.Instant
-import com.seanshubin.code.structure.config.Converters.IntConverter
-import com.seanshubin.code.structure.config.Converters.StringConverter
-import com.seanshubin.code.structure.config.Converters.PathConverter
-import com.seanshubin.code.structure.config.Converters.InstantConverter
-import com.seanshubin.code.structure.config.Converters.StringListConverter
-import com.seanshubin.code.structure.config.Converters.PathListConverter
-import com.seanshubin.code.structure.json.JsonMappers
 
 class JsonFileConfiguration(
     private val files: FilesContract,
@@ -100,7 +100,7 @@ class JsonFileConfiguration(
         files.writeString(configFilePath, jsonText)
     }
 
-    private fun loadConfig() :Untyped {
+    private fun loadConfig(): Untyped {
         ensureFileExists()
         val text = files.readString(configFilePath)
         val untyped = Untyped(JsonMappers.parser.readValue(text))

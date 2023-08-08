@@ -5,7 +5,6 @@ import com.seanshubin.code.structure.domain.NameComposer.htmlAnchorReportLink
 import com.seanshubin.code.structure.domain.NameComposer.htmlAnchorSourceDisplayName
 import com.seanshubin.code.structure.domain.NameComposer.htmlAnchorSourceLink
 import com.seanshubin.code.structure.domain.NameComposer.localCycleDisplayName
-import com.seanshubin.code.structure.domain.NameComposer.localCycleDotReportBaseName
 import com.seanshubin.code.structure.domain.NameComposer.localCycleLink
 import com.seanshubin.code.structure.html.HtmlElement
 import java.nio.file.Path
@@ -74,7 +73,8 @@ class CycleReportFormat(
             "transitive",
             "depends on",
             "depended on by",
-            "source")
+            "source"
+        )
         val cells = headerNames.map(HtmlElement::th)
         val row = HtmlElement.tr(cells)
         return row

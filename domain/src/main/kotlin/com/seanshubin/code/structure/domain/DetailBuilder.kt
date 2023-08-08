@@ -8,7 +8,10 @@ object DetailBuilder {
         return fromNamesAndRelations(parsedNames, parsedRelations)
     }
 
-    private fun fromNamesAndRelations(originNameSources: List<NameBinarySource>, originRelations: List<Relation>): Detail {
+    private fun fromNamesAndRelations(
+        originNameSources: List<NameBinarySource>,
+        originRelations: List<Relation>
+    ): Detail {
         val originNames = originNameSources.map { it.name }
         val sourceByName = originNameSources.associate {
             it.name to it.source

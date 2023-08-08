@@ -54,8 +54,8 @@ enum class ReportStyle {
     abstract fun makeLabelAttribute(name: String, detail: Detail): List<Pair<String, String>>
 
     companion object {
-        val prompt:String = "one of ${values().joinToString(", ")}"
-        fun fromString(s:String):ReportStyle {
+        val prompt: String = "one of ${values().joinToString(", ")}"
+        fun fromString(s: String): ReportStyle {
             val value = values().find { s.equals(it.name, ignoreCase = true) }
             return value ?: throw RuntimeException("Expected $prompt, got '$s'")
         }

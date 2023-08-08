@@ -9,13 +9,14 @@ data class Report(
 ) {
     enum class Type {
         HTML {
-            override fun resolvePath(baseDir: Path, baseName:String): Path =
+            override fun resolvePath(baseDir: Path, baseName: String): Path =
                 baseDir.resolve("$baseName.html")
         },
         DOT {
-            override fun resolvePath(baseDir: Path, baseName:String): Path =
+            override fun resolvePath(baseDir: Path, baseName: String): Path =
                 baseDir.resolve("$baseName.txt")
         };
-        abstract fun resolvePath(baseDir: Path, baseName:String):Path
+
+        abstract fun resolvePath(baseDir: Path, baseName: String): Path
     }
 }
