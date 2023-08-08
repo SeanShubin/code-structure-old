@@ -629,17 +629,12 @@ class DetailTest {
             }
         """.trimIndent()
 
-        val simpleReportStyle: ReportStyle = SimpleReportStyle()
-        val tableReportStyle: ReportStyle = TableReportStyle()
-        val reportStyleMap: Map<String, ReportStyle> = mapOf(
-            "simple" to simpleReportStyle,
-            "table" to tableReportStyle
-        )
-        val reportFormat: ReportFormat = DotReportFormat(reportStyleMap)
+        val reportStyle:ReportStyle = ReportStyle.SIMPLE
+        val reportFormat: ReportFormat = DotReportFormat(reportStyle)
 
         fun reportLines(detail: Detail): List<String> {
             val reportDir = Paths.get("report-dir")
-            val report = reportFormat.generateReports(reportDir, detail, "simple").getOrNull(0) ?: return emptyList()
+            val report = reportFormat.generateReports(reportDir, detail).getOrNull(0) ?: return emptyList()
             val baseName = report.name
             val dotLines = report.lines
             val path = report.type.resolvePath(reportDir, baseName)
@@ -754,7 +749,7 @@ class DetailTest {
 
         fun reportLines(detail: Detail): List<String> {
             val reportDir = Paths.get("report-path")
-            val report = reportFormat.generateReports(reportDir, detail, "simple").getOrNull(0) ?: return emptyList()
+            val report = reportFormat.generateReports(reportDir, detail).getOrNull(0) ?: return emptyList()
             val baseName = report.name
             val path = report.type.resolvePath(reportDir, baseName)
             val dotLines = report.lines

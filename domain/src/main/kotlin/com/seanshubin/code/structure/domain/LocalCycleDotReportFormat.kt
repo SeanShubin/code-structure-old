@@ -4,7 +4,7 @@ import com.seanshubin.code.structure.domain.NameComposer.localCycleDotReportBase
 import java.nio.file.Path
 
 class LocalCycleDotReportFormat:ReportFormat {
-    override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
+    override fun generateReports(reportDir: Path, detail: Detail): List<Report> {
         val cycles = detail.findAllCycles()
         return cycles.flatMap(::generateReports)
     }

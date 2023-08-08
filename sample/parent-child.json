@@ -1,0 +1,6 @@
+{
+  "inputFile": "sample/parent-child.txt",
+  "reportDir": "generated/parent-child",
+  "sourcePrefix": "file:///Users/seashubi/github.com/SeanShubin/code-structure",
+  "reportStyleName": "simple"
+}

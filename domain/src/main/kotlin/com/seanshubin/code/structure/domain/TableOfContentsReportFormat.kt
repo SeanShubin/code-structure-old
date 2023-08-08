@@ -4,7 +4,7 @@ import com.seanshubin.code.structure.html.HtmlElement
 import java.nio.file.Path
 
 class TableOfContentsReportFormat : ReportFormat {
-    override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
+    override fun generateReports(reportDir: Path, detail: Detail): List<Report> {
         val name = "index"
         val title = "Dependency Report"
         val header = HtmlElement.h1(title)

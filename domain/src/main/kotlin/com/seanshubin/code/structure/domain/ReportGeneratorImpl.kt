@@ -41,7 +41,7 @@ class ReportGeneratorImpl(
     }
 
     private fun generateReports(reportFormat:ReportFormat, detail:Detail){
-        val reports = reportFormat.generateReports(reportDir, detail, style)
+        val reports = reportFormat.generateReports(reportDir, detail)
         reports.forEach{ report ->
             val path = report.type.resolvePath(reportDir, report.name)
             val lines = report.lines

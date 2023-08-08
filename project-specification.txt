@@ -41,11 +41,13 @@
   global [ stdlib test ]
   modules {
     console       [ domain ]
-    domain        [ contract contract-test process html ]
+    domain        [ contract contract-test process html config ]
+    config        [ contract json ]
     contract-test [ contract ]
     contract      []
     process       [ coroutines ]
     html          []
+    json          [ jackson jackson-time ]
   }
   detangler [domain]
   consoleEntryPoint {

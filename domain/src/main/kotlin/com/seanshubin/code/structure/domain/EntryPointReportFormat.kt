@@ -10,7 +10,7 @@ import java.nio.file.Path
 class EntryPointReportFormat(
     private val sourcePrefix: String,
 ) : ReportFormat {
-    override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
+    override fun generateReports(reportDir: Path, detail: Detail): List<Report> {
         val name = "entry-points"
         val title = "Entry points or dead code"
         val tableOfContentsLink = HtmlElement.a("table of contents", "index.html")

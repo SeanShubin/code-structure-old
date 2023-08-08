@@ -7,7 +7,7 @@ import java.nio.file.Path
 class LocalCycleHtmlReportFormat(
     private val loadSvgLines: (Path, String) -> List<String>
 ):ReportFormat {
-    override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
+    override fun generateReports(reportDir: Path, detail: Detail): List<Report> {
         val cycles = detail.findAllCycles()
         return cycles.flatMap{generateReports(reportDir, it)}
     }

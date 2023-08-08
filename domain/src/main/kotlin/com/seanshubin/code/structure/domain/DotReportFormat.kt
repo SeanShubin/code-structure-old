@@ -1,43 +1,41 @@
 package com.seanshubin.code.structure.domain
 
 import com.seanshubin.code.structure.domain.NameComposer.baseFileName
-import com.seanshubin.code.structure.domain.NameComposer.dotFileName
 import com.seanshubin.code.structure.domain.NameComposer.htmlFileName
 import java.nio.file.Path
 
-class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : ReportFormat {
-    override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
+class DotReportFormat(private val reportStyle: ReportStyle) : ReportFormat {
+    override fun generateReports(reportDir: Path, detail: Detail): List<Report> {
         val allDetails = detail.thisAndFlattenedChildren()
         val detailsWithChildren = allDetails.filter { it.children.isNotEmpty() }
-        val dotReports = detailsWithChildren.map { singleReport(it, style) }
+        val dotReports = detailsWithChildren.map { singleReport(it) }
         return dotReports
     }
 
-    private fun singleReport(detail: Detail, style: String): Report {
+    private fun singleReport(detail: Detail): Report {
         val header = listOf(
             "digraph detangled {",
             "  bgcolor=lightgray"
         )
-        val body = reportBody(detail, style).indent("  ")
+        val body = reportBody(detail).indent("  ")
         val footer = listOf("}")
         val lines = header + body + footer
         val name = detail.baseFileName()
         return Report(name, lines, Report.Type.DOT)
     }
 
-    private fun reportBody(detail: Detail, style: String): List<String> {
-        val singlesLines = reportSingles(detail.children, style)
+    private fun reportBody(detail: Detail): List<String> {
+        val singlesLines = reportSingles(detail.children)
         val relations = detail.relations()
         val relationsLines = reportRelations(relations.notInCycle)
         val cyclesLines = reportCycles(relations.cycles)
         return singlesLines + relationsLines + cyclesLines
     }
 
-    private fun reportSingles(list: List<Detail>, style: String): List<String> =
-        list.map { reportSingle(it, style) }
+    private fun reportSingles(list: List<Detail>): List<String> =
+        list.map { reportSingle(it) }
 
-    private fun reportSingle(detail: Detail, style: String): String {
-        val reportStyle = reportStyleMap[style] ?: styleNotFound(style)
+    private fun reportSingle(detail: Detail): String {
         val urlAttribute = makeUrlAttribute(detail)
         val unquotedName = composeNodeName(detail.name)
         val labelAttribute = reportStyle.makeLabelAttribute(unquotedName, detail)
@@ -100,10 +98,4 @@ class DotReportFormat(private val reportStyleMap: Map<String, ReportStyle>) : Re
     private fun String.doubleQuote(): String = "\"$this\""
     private fun String.indent(prefix: String): String = "$prefix$this"
     private fun List<String>.indent(prefix: String): List<String> = map { it.indent(prefix) }
-
-    private fun styleNotFound(style: String): Nothing {
-        val styleListString = reportStyleMap.keys.sorted().joinToString("', '", "'", "'")
-        val message = "Style '$style' not found, expected one of $styleListString"
-        throw RuntimeException(message)
-    }
 }

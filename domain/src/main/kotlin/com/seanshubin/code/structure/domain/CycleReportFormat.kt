@@ -13,7 +13,7 @@ import java.nio.file.Path
 class CycleReportFormat(
     private val sourcePrefix: String,
 ) : ReportFormat {
-    override fun generateReports(reportDir: Path, detail: Detail, style: String): List<Report> {
+    override fun generateReports(reportDir: Path, detail: Detail): List<Report> {
         val name = "cycles"
         val title = "Cycles"
         val tableOfContentsLink = HtmlElement.a("table of contents", "index.html")

@@ -1,0 +1,6 @@
+{
+  "inputFile": "sample/sample.txt",
+  "reportDir": "generated/simple",
+  "sourcePrefix": "file:///Users/seashubi/github.com/SeanShubin/code-structure",
+  "reportStyleName": "simple"
+}
