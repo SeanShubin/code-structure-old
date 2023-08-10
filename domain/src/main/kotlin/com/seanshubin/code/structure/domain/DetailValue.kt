@@ -1,5 +1,7 @@
 package com.seanshubin.code.structure.domain
 
+import com.seanshubin.code.structure.datatypes.Name
+
 data class DetailValue(
     val name: Name,
     val source: String?,

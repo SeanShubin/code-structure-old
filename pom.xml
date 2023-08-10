@@ -61,6 +61,11 @@
         <module>process</module>
         <module>html</module>
         <module>json</module>
+        <module>scanformatclass</module>
+        <module>scanformatbeam</module>
+        <module>scanformat</module>
+        <module>logger</module>
+        <module>datatypes</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

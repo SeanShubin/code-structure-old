@@ -1,5 +1,7 @@
 package com.seanshubin.code.structure.domain
 
+import com.seanshubin.code.structure.datatypes.Name
+import com.seanshubin.code.structure.datatypes.Relation
 import com.seanshubin.code.structure.domain.NameComposer.baseFileName
 import com.seanshubin.code.structure.domain.NameComposer.htmlFileName
 import java.nio.file.Path

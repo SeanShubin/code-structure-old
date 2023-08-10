@@ -1,5 +1,7 @@
 package com.seanshubin.code.structure.domain
 
+import com.seanshubin.code.structure.datatypes.Name
+
 class DetailLookup(
     private val detailMap: Map<Name, DetailValue>,
     private val value: DetailValue

@@ -1,7 +1,9 @@
 package com.seanshubin.code.structure.domain
 
-import com.seanshubin.code.structure.domain.Comparators.nameListComparator
-import com.seanshubin.code.structure.domain.Comparators.pairCycleListOfRelationComparator
+import com.seanshubin.code.structure.datatypes.Comparators.nameListComparator
+import com.seanshubin.code.structure.datatypes.Comparators.pairCycleListOfRelationComparator
+import com.seanshubin.code.structure.datatypes.Name
+import com.seanshubin.code.structure.datatypes.Relation
 import com.seanshubin.code.structure.domain.FoldFunctions.collapseToMapOfList
 import com.seanshubin.code.structure.domain.NameComposer.htmlAnchorReportLink
 import com.seanshubin.code.structure.domain.NameComposer.localCycleLink

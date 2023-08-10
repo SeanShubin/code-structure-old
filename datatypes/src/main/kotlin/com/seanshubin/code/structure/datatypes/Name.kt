@@ -1,6 +1,6 @@
-package com.seanshubin.code.structure.domain
+package com.seanshubin.code.structure.datatypes
 
-import com.seanshubin.code.structure.domain.Comparators.stringListComparator
+import com.seanshubin.code.structure.datatypes.Comparators.stringListComparator
 
 data class Name(val parts: List<String>) : Comparable<Name> {
     fun descend(target: String): Name? =

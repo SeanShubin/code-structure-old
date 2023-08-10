@@ -1,5 +1,9 @@
 package com.seanshubin.code.structure.domain
 
+import com.seanshubin.code.structure.datatypes.Name
+import com.seanshubin.code.structure.datatypes.NameBinarySource
+import com.seanshubin.code.structure.datatypes.Relation
+
 object Format {
     private val namePattern = """\w+(?:\.\w+)*"""
     private val nameBinarySourceRegex = Regex("""([^ ]+)\s+([^ ]+)\s+([^ ]+)""")

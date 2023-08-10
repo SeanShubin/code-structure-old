@@ -1,4 +1,4 @@
-package com.seanshubin.code.structure.domain
+package com.seanshubin.code.structure.datatypes
 
 object Comparators {
     val stringListComparator = ListComparator<String>()

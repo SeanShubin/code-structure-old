@@ -1,5 +1,8 @@
 package com.seanshubin.code.structure.domain
 
+import com.seanshubin.code.structure.datatypes.Name
+import com.seanshubin.code.structure.datatypes.Relation
+
 object NameComposer {
     fun List<String>.htmlAnchorReportDisplayName(): String =
         if (isEmpty()) "--root--"

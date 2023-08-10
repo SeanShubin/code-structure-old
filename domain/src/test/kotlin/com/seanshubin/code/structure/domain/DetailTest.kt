@@ -1,5 +1,7 @@
 package com.seanshubin.code.structure.domain
 
+import com.seanshubin.code.structure.datatypes.Name
+import com.seanshubin.code.structure.datatypes.Relation
 import java.nio.file.Paths
 import kotlin.test.Test
 import kotlin.test.assertEquals

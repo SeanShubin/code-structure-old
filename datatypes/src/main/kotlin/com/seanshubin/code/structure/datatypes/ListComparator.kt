@@ -1,4 +1,4 @@
-package com.seanshubin.code.structure.domain
+package com.seanshubin.code.structure.datatypes
 
 class ListComparator<T : Comparable<T>> : Comparator<List<T>> {
     override fun compare(listA: List<T>?, listB: List<T>?): Int {

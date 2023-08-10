@@ -1,6 +1,6 @@
-package com.seanshubin.code.structure.domain
+package com.seanshubin.code.structure.datatypes
 
-import com.seanshubin.code.structure.domain.Comparators.nameListComparator
+import com.seanshubin.code.structure.datatypes.Comparators.nameListComparator
 
 data class Relation(val first: Name, val second: Name) : Comparable<Relation> {
     fun toList(): List<Name> = listOf(first, second)

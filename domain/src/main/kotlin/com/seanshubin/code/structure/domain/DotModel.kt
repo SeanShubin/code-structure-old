@@ -1,5 +1,8 @@
 package com.seanshubin.code.structure.domain
 
+import com.seanshubin.code.structure.datatypes.Name
+import com.seanshubin.code.structure.datatypes.Relation
+
 data class DotModel(val singles: List<Single>, val relations: List<Relation>) {
     fun toDotLines(): List<String> {
         val singlesLines = singles.map { it.toDotLine() }

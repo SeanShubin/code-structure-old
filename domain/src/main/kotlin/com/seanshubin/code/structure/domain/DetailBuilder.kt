@@ -1,5 +1,8 @@
 package com.seanshubin.code.structure.domain
 
+import com.seanshubin.code.structure.datatypes.Name
+import com.seanshubin.code.structure.datatypes.NameBinarySource
+import com.seanshubin.code.structure.datatypes.Relation
 import com.seanshubin.code.structure.domain.FoldFunctions.collapseToMapOfList
 
 object DetailBuilder {
@@ -8,7 +11,7 @@ object DetailBuilder {
         return fromNamesAndRelations(parsedNames, parsedRelations)
     }
 
-    private fun fromNamesAndRelations(
+    fun fromNamesAndRelations(
         originNameSources: List<NameBinarySource>,
         originRelations: List<Relation>
     ): Detail {

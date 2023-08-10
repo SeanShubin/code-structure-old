@@ -40,14 +40,19 @@
   }
   global [ stdlib test ]
   modules {
-    console       [ domain ]
-    domain        [ contract contract-test process html config ]
-    config        [ contract json ]
-    contract-test [ contract ]
-    contract      []
-    process       [ coroutines ]
-    html          []
-    json          [ jackson jackson-time ]
+    console         [ domain ]
+    domain          [ contract contract-test process html config scanformatclass scanformatbeam logger datatypes ]
+    config          [ contract json ]
+    contract-test   [ contract ]
+    contract        []
+    process         [ coroutines ]
+    html            []
+    json            [ jackson jackson-time ]
+    scanformatclass [ scanformat ]
+    scanformatbeam  [ scanformat ]
+    scanformat      [ contract json datatypes ]
+    logger          [ contract ]
+    datatypes       []
   }
   detangler [domain]
   consoleEntryPoint {
