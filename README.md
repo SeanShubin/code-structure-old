@@ -25,7 +25,7 @@
 ## Configuration Example
 ```json
 {
-  "inputDir": "/Users/seashubi/github.com/my-gitlab-id/my-project",
+  "inputDir": "/Users/me/github.com/my-gitlab-id/my-project",
   "outputDir": "generated/my-project",
   "sourcePrefix": "https://github.com/my-gitlab-id/my-project/blob/staging/",
   "reportStyleName": "simple",
