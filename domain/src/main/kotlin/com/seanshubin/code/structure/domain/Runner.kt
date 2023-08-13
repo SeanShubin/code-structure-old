@@ -1,17 +1,15 @@
 package com.seanshubin.code.structure.domain
 
-import com.seanshubin.code.structure.contract.FilesContract
 import com.seanshubin.code.structure.contract.SystemContract
 import com.seanshubin.code.structure.datatypes.NameBinarySource
 import com.seanshubin.code.structure.datatypes.NameDto.Companion.toName
 import com.seanshubin.code.structure.datatypes.Relation
+import com.seanshubin.code.structure.scanformat.AssociationScanner
 import com.seanshubin.code.structure.scanformat.AssociationsRepository
 import com.seanshubin.code.structure.scanformat.DependencyModule
-import com.seanshubin.code.structure.scanformat.Scanner
-import java.nio.file.Path
 
 class Runner(
-    private val scanner: Scanner,
+    private val associationScanner: AssociationScanner,
     private val reportGenerator: ReportGenerator,
     private val system: SystemContract,
     private val associationsRepository: AssociationsRepository,
@@ -26,7 +24,7 @@ class Runner(
     }
 
     private fun runMeInsideTimer() {
-        scanner.scanAssociations()
+        associationScanner.scanAssociations()
         val associations = associationsRepository.loadAssociations()
         val (names, relations) = associations.toNamesAndRelations()
         val detail = DetailBuilder.fromNamesAndRelations(names, relations)

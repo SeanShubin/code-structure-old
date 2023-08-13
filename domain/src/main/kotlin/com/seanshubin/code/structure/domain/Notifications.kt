@@ -10,5 +10,6 @@ interface Notifications {
     fun fileSuccessfullyParsed(file: Path, text: String, contents: FileContents)
     fun wrongNumberOfModuleMatches(file: Path, text: String, quantity: Int)
     fun unableToParseDependencyLine(file: Path, dependencyLine: String)
+    fun warnNoRelevantClassesInPath(path: Path)
     fun summarize()
 }

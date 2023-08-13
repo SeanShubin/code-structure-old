@@ -1,5 +1,5 @@
 package com.seanshubin.code.structure.scanformat
 
-interface Scanner {
+interface AssociationScanner {
     fun scanAssociations()
 }

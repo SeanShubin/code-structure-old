@@ -7,16 +7,16 @@ import com.seanshubin.code.structure.scanformat.FileParser
 import com.seanshubin.code.structure.scanformat.RegexPatterns
 import java.nio.file.Path
 
-class FileParserSource(
+class FileParserSourceBeam(
     private val files: FilesContract,
     private val dependencyLineParser: DependencyLineParser,
     private val fileSuccessfullyParsed: (Path, String, FileContents) -> Unit,
     private val wrongNumberOfModuleMatches: (Path, String, Int) -> Unit,
     private val unableToParseDependencies: (Path, String) -> Unit
 ) : FileParser {
-    override fun parseFile(baseDir: Path, file: Path): FileContents? {
+    override fun parseFile(baseDir: Path, file: Path): List<FileContents> {
         val contents = files.readString(file)
-        return parseFileContents(baseDir, file, contents)
+        return listOfNotNull(parseFileContents(baseDir, file, contents))
     }
 
     private fun parseFileContents(baseDir: Path, file: Path, text: String): FileContents? {

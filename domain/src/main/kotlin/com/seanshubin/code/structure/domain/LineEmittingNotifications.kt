@@ -39,10 +39,17 @@ class LineEmittingNotifications(
         emitLine("bad-dependency-line", "$file: $dependencyLine")
     }
 
+    var noRelevantClassesInPathCount = 0
+    override fun warnNoRelevantClassesInPath(path: Path) {
+        noRelevantClassesInPathCount++
+        emitLine("no-relevant-classes-in-path", path.toString())
+    }
+
     override fun summarize() {
         emitLine("summary", "relevant files: $relevantFileFoundCount")
         emitLine("summary", "wrong number of modules: $wrongNumberOfModuleMatchesCount")
         emitLine("summary", "unable to parse dependency line: $unableToParseDependencyLineCount")
+        emitLine("summary", "no relevant classes in path: $noRelevantClassesInPathCount")
         emitLine("summary", "successfully parsed: $fileSuccessfullyParsedCount")
     }
 }

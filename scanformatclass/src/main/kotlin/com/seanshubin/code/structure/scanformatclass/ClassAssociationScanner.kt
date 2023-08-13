@@ -1,20 +1,22 @@
-package com.seanshubin.code.structure.scanformatbeam
+package com.seanshubin.code.structure.scanformatclass
 
+import com.seanshubin.code.structure.scanformat.AssociationScanner
 import com.seanshubin.code.structure.scanformat.AssociationsRepository
 import com.seanshubin.code.structure.scanformat.DependencyLoader
 import com.seanshubin.code.structure.scanformat.DependencyModule
-import com.seanshubin.code.structure.scanformat.Scanner
 
-class BeamScanner(
+class ClassAssociationScanner(
     private val dependencyLoader: DependencyLoader,
     private val associationsRepository: AssociationsRepository,
     private val summarize: () -> Unit
-) : Scanner {
+) : AssociationScanner {
     override fun scanAssociations() {
-        val modules = dependencyLoader.loadModules().filter {
+        val modules = dependencyLoader.loadModules()
+        val filteredModules1 = modules.filter {
             it.source != null && it.binary != null
-        }.filterExternalDependencies()
-        associationsRepository.storeAssociations(modules)
+        }
+        val filteredModules2 = filteredModules1.filterExternalDependencies()
+        associationsRepository.storeAssociations(filteredModules2)
         summarize()
     }
 

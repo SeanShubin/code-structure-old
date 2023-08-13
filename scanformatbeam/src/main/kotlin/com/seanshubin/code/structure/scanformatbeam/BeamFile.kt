@@ -1,5 +1,6 @@
 package com.seanshubin.code.structure.scanformatbeam
 
+import com.seanshubin.code.structure.scanformat.ModuleFile
 import com.seanshubin.code.structure.scanformatbeam.IntUtil.roundUpMod
 
 data class BeamFile(
@@ -7,7 +8,7 @@ data class BeamFile(
     val atoms: List<String>,
     val imports: List<Import>,
     val sections: List<Section>
-) {
+) : ModuleFile {
     fun replaceAtom(original: String, newValue: String): BeamFile {
         val newAtoms = atoms.map {
             if (it == original) {
@@ -20,8 +21,8 @@ data class BeamFile(
     }
 
     fun computeSize(): Int = sections.sumOf { it.size.roundUpMod(4) + 8 } + 4
-    val name: String get() = atoms[0]
-    val dependencies: List<String>
+    override val name: String get() = atoms[0]
+    override val dependencies: List<String>
         get() = imports.map { atoms[it.moduleIndex - 1] }.distinct()
 
     fun toLines(): List<String> = sizeLines() + atomLines() + importLines()

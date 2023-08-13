@@ -6,7 +6,7 @@ class SourceDependencyLoader(
 ) : DependencyLoader {
     override fun loadModules(): List<DependencyModule> {
         val sourceFiles = sourceFileLoader.loadFileList()
-        val sourceFileContents = sourceFiles.mapNotNull { sourceFileParser.parseFile(sourceFileLoader.dir, it) }
+        val sourceFileContents = sourceFiles.flatMap { sourceFileParser.parseFile(sourceFileLoader.dir, it) }
         return sourceFileContents.map { contents ->
             val name = contents.name
             val dependencies = contents.dependencies

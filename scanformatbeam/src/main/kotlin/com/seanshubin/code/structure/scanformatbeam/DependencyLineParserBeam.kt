@@ -1,6 +1,8 @@
-package com.seanshubin.code.structure.scanformat
+package com.seanshubin.code.structure.scanformatbeam
 
-class DependencyLineParserImpl : DependencyLineParser {
+import com.seanshubin.code.structure.scanformat.DependencyLineParser
+
+class DependencyLineParserBeam : DependencyLineParser {
     override fun parseDependencies(line: String): List<String>? {
         parsers.forEach {
             val parsed = it(line)

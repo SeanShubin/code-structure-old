@@ -9,8 +9,8 @@ class BinaryDependencyLoader(
     override fun loadModules(): List<DependencyModule> {
         val binaryFiles = binaryFileLoader.loadFileList()
         val sourceFiles = sourceFileLoader.loadFileList()
-        val binaryFileContents = binaryFiles.mapNotNull { binaryFileParser.parseFile(binaryFileLoader.dir, it) }
-        val sourceFileContents = sourceFiles.mapNotNull { sourceFileParser.parseFile(sourceFileLoader.dir, it) }
+        val binaryFileContents = binaryFiles.flatMap { binaryFileParser.parseFile(binaryFileLoader.dir, it) }
+        val sourceFileContents = sourceFiles.flatMap { sourceFileParser.parseFile(sourceFileLoader.dir, it) }
         val binaryByName = binaryFileContents.associateBy { it.name }
         val sourceByName = sourceFileContents.associateBy { it.name }
         val allNames = (binaryFileContents.map { it.name } + sourceFileContents.map { it.name }).sorted().distinct()

@@ -53,6 +53,14 @@ class AssociationsRepositoryImpl(
             }
         }.flatMap { listOf("relation", JsonMappers.compact.writeValueAsString(it)) }
         val lines = singleLines + relationLines
+        path.ensureParentExists(files)
         files.write(path, lines)
+    }
+
+    private fun Path.ensureParentExists(files: FilesContract) {
+        val parent = this.parent
+        if (parent != null) {
+            files.createDirectories(parent)
+        }
     }
 }

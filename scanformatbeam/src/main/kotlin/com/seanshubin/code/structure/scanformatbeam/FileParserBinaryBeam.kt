@@ -6,10 +6,10 @@ import com.seanshubin.code.structure.scanformat.FileParser
 import com.seanshubin.code.structure.scanformatbeam.BeamFileReader.toBeamFile
 import java.nio.file.Path
 
-class FileParserBinary(private val files: FilesContract) : FileParser {
+class FileParserBinaryBeam(private val files: FilesContract) : FileParser {
     private val removeElixirPrefix = { s: String -> s.removePrefix("Elixir.") }
     private fun String.removeElixirPrefix(): String = removeElixirPrefix(this)
-    override fun parseFile(baseDir: Path, file: Path): FileContents? {
+    override fun parseFile(baseDir: Path, file: Path): List<FileContents> {
         val beamFile = files.newInputStream(file).use {
             it.toBeamFile()
         }
@@ -17,6 +17,6 @@ class FileParserBinary(private val files: FilesContract) : FileParser {
         val relativeDir = baseDir.relativize(file)
         val source = relativeDir.toString()
         val dependencies = beamFile.dependencies.map(removeElixirPrefix)
-        return FileContents(module, source, dependencies)
+        return listOf(FileContents(module, source, dependencies))
     }
 }
